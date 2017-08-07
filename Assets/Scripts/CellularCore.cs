@@ -10,6 +10,7 @@ namespace ProceduralToolkit
 	public class CellularCore : MonoBehaviour
 	{
 		public RawImage		m_image;
+		public Player		m_player;
 
 		private const int	m_width = 64;
 		private const int	m_height = 64;
@@ -20,7 +21,6 @@ namespace ProceduralToolkit
 		private float		m_deltaSpeed = 0f;
 
 		private MainGrid	m_mainGrid;
-		private Player		m_player;
 
 		private void Awake()
 		{
@@ -32,7 +32,6 @@ namespace ProceduralToolkit
 			m_image.texture = m_texture;
 
 			m_mainGrid = new MainGrid(m_width, m_height);
-			m_player = new Player(m_width, m_height);
 			m_mainGrid.Setup();
 			m_player.Setup();
 		}
@@ -43,13 +42,11 @@ namespace ProceduralToolkit
 			if (m_deltaSpeed > 1f / m_speed)
 			{
 				m_deltaSpeed = 0f;
-
-				m_mainGrid.Simulate();
 				m_player.Simulate();
+				m_mainGrid.Simulate();
 				m_player.Add(ref m_mainGrid.m_automaton);
 				Draw();
 			}
-
 		}
 
 		private void Draw()

@@ -7,6 +7,7 @@ namespace ProceduralToolkit
 	/// <summary>
 	/// Generic cellular automaton for two-state rulesets
 	/// </summary>
+
 	public class CellularAutomaton
 	{
 		public CellularCell[,]				m_cells;

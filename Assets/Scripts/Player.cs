@@ -5,22 +5,16 @@ namespace ProceduralToolkit
 {
 	public class Player : MonoBehaviour, ICellularObject
 	{
-		public CellularCell[,]		m_cells;
+		private CellularCell[,]		m_cells;
+		public Vector2Int			m_bounds;
 
 		private Vector2Int			m_size;
 		private Vector2Int			m_position;
-		private Vector2Int			m_bounds;
-
-		public Player(int boundsX, int boundsY)
-		{
-			m_bounds.x = boundsX;
-			m_bounds.y = boundsY;
-		}
 
 		public void Setup()
 		{
 			m_size = new Vector2Int(4, 4);
-			m_position = new Vector2Int(50, 50);
+			m_position = new Vector2Int(64 / 2, 64 / 2);
 			m_cells = new CellularCell[m_size.x, m_size.y];
 			Fill();
 		}
@@ -38,6 +32,7 @@ namespace ProceduralToolkit
 			}
 		}
 
+		// Ca c'est ce qui te sert d'update
 		public void Simulate()
 		{
 			UpdatePosition();
@@ -64,7 +59,7 @@ namespace ProceduralToolkit
 					if (x + m_position.x < automaton.m_size.x && y + m_position.y < automaton.m_size.y)
 					{
 						automaton.m_cells[x + m_position.x, y + m_position.y].value = m_cells[x, y].value;
-						automaton.m_cells[x + m_position.x, y + m_position.y].state = m_cells[x, y].state;
+						//automaton.m_cells[x + m_position.x, y + m_position.y].state = m_cells[x, y].state;
 						automaton.m_cells[x + m_position.x, y + m_position.y].color = m_cells[x, y].color;
 					}
 				}

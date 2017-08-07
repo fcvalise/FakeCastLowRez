@@ -19,7 +19,6 @@ namespace ProceduralToolkit
 
 		public void Setup()
 		{
-			//FillFromTexture();
 			FillOneRuleset(Ruleset.life);
 		}
 
@@ -53,7 +52,6 @@ namespace ProceduralToolkit
 		{
 			m_ruleset = ruleset;
 			m_automaton.SetRuleset(ruleset);
-			//FillFromTexture();
 			FillOneRuleset(ruleset);
 			Debug.Log(ruleset.ToString());
 		}
@@ -71,6 +69,9 @@ namespace ProceduralToolkit
 			}
 		}
 
+		/*
+		 * Not to remove
+		 * 
 		private void FillFromTexture()
 		{
 			for (int y = m_texture.height - 1; y >= 0; y--)
@@ -93,5 +94,6 @@ namespace ProceduralToolkit
 				}
 			}
 		}
+		*/
 	}
 }
