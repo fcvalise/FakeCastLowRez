@@ -6,6 +6,11 @@ namespace ProceduralToolkit
 	[RequireComponent(typeof(SpriteManager))]
 	public class Player : MonoBehaviour, ICellularObject
 	{
+		public enum PlayerState {
+			None,
+			CastSkill
+		}
+
 		private CellularCell[,]		m_cells;
 		public Vector2Int			m_bounds;
 
@@ -14,6 +19,9 @@ namespace ProceduralToolkit
 		private Vector2Int			m_size;
 		private Vector2Int			m_position;
 		private Vector2Int			m_lastMovement;
+
+		private bool				m_isSilence = false;
+		private PlayerState			m_state;
 
 		public void Setup()
 		{
@@ -39,8 +47,19 @@ namespace ProceduralToolkit
 
 		public void Simulate()
 		{
-			UpdatePosition();
 			m_spriteManager.Simulate(m_cells);
+
+			switch (m_state) {
+			case PlayerState.None:
+				UpdatePosition();
+				break;
+
+			case PlayerState.CastSkill:
+				UpdatePosition();
+				break;
+			default:
+				break;
+			}
 		}
 
 		private void UpdatePosition()
@@ -92,6 +111,26 @@ namespace ProceduralToolkit
 					}
 				}
 			}
+		}
+
+		public void SetState(Player.PlayerState p_state) {
+			m_state = p_state;
+		}
+
+		public bool CanCastSkill() {
+			return m_state == PlayerState.None && !m_isSilence;
+		}
+
+		public void Silence() {
+			m_isSilence = true;
+		}
+
+		public bool IsSilence() {
+			return m_isSilence;
+		}
+
+		public GameObject GetTarget() {
+			return null; //TODO get the other player
 		}
 	}
 }
