@@ -38,13 +38,18 @@ namespace ProceduralToolkit
 
 		private void Update()
 		{
+			Bullet[] bullets = FindObjectsOfType(typeof(Bullet)) as Bullet[];
 			m_deltaSpeed += Time.deltaTime;
 			if (m_deltaSpeed > 1f / m_speed)
 			{
 				m_deltaSpeed = 0f;
 				m_player.Simulate();
+				foreach (Bullet bullet in bullets)
+					bullet.Simulate();
 				m_mainGrid.Simulate();
 				m_player.Add(m_mainGrid.m_automaton.m_cells, m_mainGrid.m_staticGrid);
+				foreach (Bullet bullet in bullets)
+					bullet.Add(m_mainGrid.m_automaton.m_cells, m_mainGrid.m_staticGrid);
 				Draw();
 			}
 		}

@@ -13,6 +13,7 @@ public class ShotProjectile : ASkill {
 
 	public override void Cast(Player p_owner) {
 		GameObject bullet = Instantiate(_bullet, p_owner.transform.position, p_owner.transform.rotation);
-		bullet.GetComponent<Bullet>()._target = p_owner.GetTarget();
+		bullet.GetComponent<Bullet>().Setup();
+		//bullet.GetComponent<Bullet>()._target = p_owner.GetTarget();
 	}
 }

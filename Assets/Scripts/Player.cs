@@ -6,7 +6,8 @@ namespace ProceduralToolkit
 	[RequireComponent(typeof(SpriteManager))]
 	public class Player : MonoBehaviour, ICellularObject
 	{
-		public enum PlayerState {
+		public enum PlayerState
+		{
 			None,
 			CastSkill
 		}
@@ -17,11 +18,14 @@ namespace ProceduralToolkit
 		private SpriteManager		m_spriteManager;
 
 		private Vector2Int			m_size;
-		private Vector2Int			m_position;
-		private Vector2Int			m_lastMovement;
+		[HideInInspector]
+		public Vector2Int			m_position ;
+
+		private Vector2Int			m_movement = Vector2Int.down;
+		private Vector2Int			m_lastMovement = Vector2Int.down;
 
 		private bool				m_isSilence = false;
-		private PlayerState			m_state;
+		private PlayerState			m_state = PlayerState.None;
 
 		public void Setup()
 		{
@@ -32,66 +36,80 @@ namespace ProceduralToolkit
 			m_cells = new CellularCell[m_size.x, m_size.y];
 		}
 
-		private void Fill()
-		{
-			for (int x = 0; x < m_size.x; x++)
-			{
-				for (int y = 0; y < m_size.y; y++)
-				{
-					m_cells[x, y].state = CellularCell.State.Alive;
-					m_cells[x, y].value = 1f;
-					m_cells[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
-				}
-			}
-		}
-
 		public void Simulate()
 		{
-			m_spriteManager.Simulate(m_cells);
-
-			switch (m_state) {
+			switch (m_state)
+			{
 			case PlayerState.None:
 				UpdatePosition();
 				break;
-
 			case PlayerState.CastSkill:
-				UpdatePosition();
 				break;
 			default:
 				break;
+			}
+
+			UpdateSpriteManager();
+			m_lastMovement = m_movement;
+		}
+
+		private void Update()
+		{
+			m_movement = Vector2Int.zero;
+
+			if (Input.anyKeyDown)
+				m_state = PlayerState.None;
+			if (Input.GetKeyDown(KeyCode.Space))
+				m_state = PlayerState.CastSkill;
+
+			if (m_state == PlayerState.None)
+			{
+				if (Input.GetKey(KeyCode.RightArrow))
+					m_movement += Vector2Int.right;
+				if (Input.GetKey(KeyCode.LeftArrow))
+					m_movement += Vector2Int.left;
+				if (Input.GetKey(KeyCode.UpArrow))
+					m_movement += Vector2Int.up;
+				if (Input.GetKey(KeyCode.DownArrow))
+					m_movement += Vector2Int.down;
 			}
 		}
 
 		private void UpdatePosition()
 		{
-			Vector2Int movement = Vector2Int.zero;
-
-			if (Input.GetKey(KeyCode.RightArrow))
-				movement += Vector2Int.right;
-			if (Input.GetKey(KeyCode.LeftArrow))
-				movement += Vector2Int.left;
-			if (Input.GetKey(KeyCode.UpArrow))
-				movement += Vector2Int.up;
-			if (Input.GetKey(KeyCode.DownArrow))
-				movement += Vector2Int.down;
-
-			if (movement != Vector2Int.zero)
-			{
-				m_spriteManager.SetSide(movement);
-				m_spriteManager.PlayNext(SpriteManager.SpriteState.Walk);
-			}
-			else if (Input.GetKey(KeyCode.Space))
-				m_spriteManager.PlayNext(SpriteManager.SpriteState.Cast);
-			else
-				m_spriteManager.PlayNext(SpriteManager.SpriteState.Lay);
-
 			if (Mathf.Abs(m_lastMovement.x) == 1 && Mathf.Abs(m_lastMovement.y) == 1)
-				movement = Vector2Int.zero;
-			m_lastMovement = movement;
+				m_movement = Vector2Int.zero;
 
-			m_position += movement;
+			m_position += m_movement;
 			m_position.x = Mathf.Clamp(m_position.x, 1, m_bounds.x - m_size.x);
 			m_position.y = Mathf.Clamp(m_position.y, 1, m_bounds.y - m_size.y);
+		}
+
+		private void UpdateSpriteManager()
+		{
+			m_spriteManager.SetSide(m_movement);
+
+			switch (m_state)
+			{
+				case PlayerState.CastSkill:
+				{
+					if (m_spriteManager.GetState() != SpriteManager.SpriteState.CastIncant)
+						m_spriteManager.PlayNext(SpriteManager.SpriteState.CastStart);
+					if (m_spriteManager.isFinished())
+						m_spriteManager.PlayNext(SpriteManager.SpriteState.CastIncant);
+					break;
+				}
+				default:
+				{
+					if (m_movement != Vector2Int.zero || m_lastMovement != Vector2Int.zero)
+						m_spriteManager.PlayNext(SpriteManager.SpriteState.Walk);
+					else
+						m_spriteManager.PlayNext(SpriteManager.SpriteState.Lay);
+				}
+				break;
+			}
+
+			m_spriteManager.Simulate(m_cells);
 		}
 
 		public void Add(CellularCell[,] automaton, CellularCell[,] staticGrid)
@@ -113,24 +131,46 @@ namespace ProceduralToolkit
 			}
 		}
 
-		public void SetState(Player.PlayerState p_state) {
+		public void SetState(Player.PlayerState p_state)
+		{
 			m_state = p_state;
 		}
 
-		public bool CanCastSkill() {
+		public bool CanCastSkill()
+		{
 			return m_state == PlayerState.None && !m_isSilence;
 		}
 
-		public void Silence() {
+		public void Silence()
+		{
 			m_isSilence = true;
 		}
 
-		public bool IsSilence() {
+		public bool IsSilence()
+		{
 			return m_isSilence;
 		}
 
-		public GameObject GetTarget() {
+		public GameObject GetTarget()
+		{
 			return null; //TODO get the other player
 		}
+
+		/*
+		 * Debug
+		 * 
+		private void Fill()
+		{
+			for (int x = 0; x < m_size.x; x++)
+			{
+				for (int y = 0; y < m_size.y; y++)
+				{
+					m_cells[x, y].state = CellularCell.State.Alive;
+					m_cells[x, y].value = 1f;
+					m_cells[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
+				}
+			}
+		}
+		*/
 	}
 }

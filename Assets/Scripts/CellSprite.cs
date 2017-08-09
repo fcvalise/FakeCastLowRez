@@ -11,11 +11,11 @@ namespace ProceduralToolkit
 		private	Texture2D				m_spriteSheet;
 		private int						m_cellSizeX;
 		private int						m_numberOfSprites;
-		private	int						m_spriteCount;
+		private bool					m_isLoop;
 
+		private	int						m_spriteCount;
 		private Vector2Int				m_side = Vector2Int.down;
 		private int						m_index = 0;
-		private bool					m_isLoop;
 
 		public CellSprite(Texture2D spriteSheet, int numberOfSprites, bool isLoop)
 		{
@@ -25,6 +25,11 @@ namespace ProceduralToolkit
 			m_cellSizeX = m_spriteSheet.width / numberOfSprites;
 			m_isLoop = isLoop;
 
+			FillCells();
+		}
+
+		private void FillCells()
+		{
 			int i = 0;
 			for (int x = 0 ; x < m_spriteSheet.width; x++)
 			{
@@ -38,12 +43,12 @@ namespace ProceduralToolkit
 				{
 					Color color = m_spriteSheet.GetPixel(x, m_spriteSheet.height - y - 1);
 					//TODO : Add possibility to fill in a different way
-					FillCell(ref m_cells[i][x - i * m_cellSizeX, y], color);
+					FillOneCell(ref m_cells[i][x - i * m_cellSizeX, y], color);
 				}
 			}
 		}
 
-		private void FillCell(ref CellularCell cell, Color color)
+		private void FillOneCell(ref CellularCell cell, Color color)
 		{
 			if (color.a != 0)
 			{
@@ -57,24 +62,29 @@ namespace ProceduralToolkit
 			}
 		}
 
+		public void Simulate(CellularCell[,] cells)
+		{
+			PrintToCells(cells);
+			if (m_index < m_numberOfSprites - 1)
+				m_index++;
+			else if (m_isLoop)
+				m_index = 0;
+		}
+
 		public void Play()
 		{
 			m_index = 0;
+		}
+
+		public bool isFinished()
+		{
+			return m_index == m_numberOfSprites - 1;
 		}
 
 		public void SetSide(Vector2Int side)
 		{
 			if (side == Vector2Int.left || side == Vector2Int.right || side == Vector2Int.up || side == Vector2Int.down)
 				m_side = side;
-		}
-
-		public void Simulate(CellularCell[,] cells)
-		{
-			if (m_index < m_numberOfSprites - 1)
-				m_index++;
-			else if (m_isLoop)
-				m_index = 0;
-			PrintToCells(cells);
 		}
 
 		private void PrintToCells(CellularCell[,] cells)
