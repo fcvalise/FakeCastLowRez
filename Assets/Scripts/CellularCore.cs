@@ -44,7 +44,7 @@ namespace ProceduralToolkit
 				m_deltaSpeed = 0f;
 				m_player.Simulate();
 				m_mainGrid.Simulate();
-				m_player.Add(ref m_mainGrid.m_automaton);
+				m_player.Add(m_mainGrid.m_automaton.m_cells, m_mainGrid.m_staticGrid);
 				Draw();
 			}
 		}
@@ -57,7 +57,12 @@ namespace ProceduralToolkit
 				{
 					m_mainGrid.m_automaton.m_cells[x, y].color.s = 1f - m_mainGrid.m_automaton.m_cells[x, y].value;
 					m_mainGrid.m_automaton.m_cells[x, y].color.a = Mathf.Clamp(m_mainGrid.m_automaton.m_cells[x, y].value, 0f, 1f);
-					m_pixels[y * m_width + x] = m_mainGrid.m_automaton.m_cells[x, y].color.ToColor();
+					if (m_mainGrid.m_staticGrid[x, y].state == CellularCell.State.Alive)
+					{
+						m_pixels[y * m_width + x] = m_mainGrid.m_staticGrid[x, y].color.ToColor();
+					}
+					else
+						m_pixels[y * m_width + x] = m_mainGrid.m_automaton.m_cells[x, y].color.ToColor();
 				}
 			}
 			m_texture.SetPixels(m_pixels);

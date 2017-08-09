@@ -5,6 +5,7 @@ namespace ProceduralToolkit
 	public class MainGrid : ICellularObject
 	{
 		public CellularAutomaton	m_automaton;
+		public CellularCell[,]		m_staticGrid;
 
 		private Ruleset				m_ruleset = Ruleset.coral;
 		private float				m_startNoise = 0.25f;
@@ -15,6 +16,7 @@ namespace ProceduralToolkit
 		{
 			m_texture = (Texture2D)Resources.Load("Sprites/test_map_cpu");
 			m_automaton = new CellularAutomaton(m_texture.width, m_texture.height, m_ruleset, m_startNoise, m_aliveBorders);
+			m_staticGrid = new CellularCell[m_texture.width, m_texture.height];
 		}
 
 		public void Setup()
@@ -28,7 +30,7 @@ namespace ProceduralToolkit
 			m_automaton.Simulate();
 		}
 
-		public void Add(ref CellularAutomaton automaton) { }
+		public void Add(CellularCell[,] automaton, CellularCell[,] staticGrid) { }
 
 		private void UpdateRuleset()
 		{
