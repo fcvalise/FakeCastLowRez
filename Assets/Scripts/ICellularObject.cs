@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ProceduralToolkit
+public interface ICellularObject
 {
-	public interface ICellularObject
-	{
-		void Setup();
-		void Simulate();
-		void Add(CellularCell[,] p_automaton, CellularCell[,] p_staticGrid);
-	}
+	void Setup();
+	void Simulate();
+	void Add(CellularCell[,] p_automaton, CellularCell[,] p_staticGrid);
 }
