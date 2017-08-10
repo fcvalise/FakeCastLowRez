@@ -13,8 +13,6 @@ public class Player : ACellObject
 	private Cell[,]				_cells;
 	private SpriteManager		_spriteManager;
 	private Vector2				_size;
-	[HideInInspector]
-	public Vector2				_position;
 
 	private Vector2				_movement = Vector2.down;
 	private Vector2				_lastMovement = Vector2.down;
@@ -27,7 +25,7 @@ public class Player : ACellObject
 		_spriteManager = GetComponent<SpriteManager>();
 		//TODO : To get from SpriteManager
 		_size = new Vector2(10, 10);
-		_position = new Vector2(64 / 2, 64 / 2);
+		transform.position = new Vector2(64 / 2, 64 / 2);
 		_cells = new Cell[(int)_size.x, (int)_size.y];
 	}
 
@@ -72,12 +70,16 @@ public class Player : ACellObject
 
 	private void UpdatePosition()
 	{
+		Vector2 position = transform.position;
+
 		if (Mathf.Abs(_lastMovement.x) == 1 && Mathf.Abs(_lastMovement.y) == 1)
 			_movement = Vector2.zero;
 
-		_position += _movement;
-		_position.x = Mathf.Clamp(_position.x, 1, Core._width - _size.x);
-		_position.y = Mathf.Clamp(_position.y, 1, Core._height - _size.y);
+		position += _movement;
+		position.x = Mathf.Clamp(position.x, 1, Core._width - _size.x);
+		position.y = Mathf.Clamp(position.y, 1, Core._height - _size.y);
+
+		transform.position = position;
 	}
 
 	private void UpdateSpriteManager()
@@ -109,18 +111,20 @@ public class Player : ACellObject
 
 	public override void Add(Cell[,] p_automaton, Cell[,] p_staticGrid)
 	{
+		Vector2Int position = new Vector2Int((int)transform.position.x, (int)transform.position.y);
+		
 		for (int x = 0; x < _size.x; x++)
 		{
 			for (int y = 0; y < _size.y; y++)
 			{
-				if (x + _position.x < Core._width && y + _position.y < Core._height)
+				if (x + transform.position.x < Core._width && y + transform.position.y < Core._height)
 				{
-					p_staticGrid[x + (int)_position.x, y + (int)_position.y].value = _cells[x, y].value;
-					p_staticGrid[x + (int)_position.x, y + (int)_position.y].state = _cells[x, y].state;
-					p_staticGrid[x + (int)_position.x, y + (int)_position.y].color = _cells[x, y].color;
+					p_staticGrid[x + position.x, y + position.y].value = _cells[x, y].value;
+					p_staticGrid[x + position.x, y + position.y].state = _cells[x, y].state;
+					p_staticGrid[x + position.x, y + position.y].color = _cells[x, y].color;
 
 					if (_cells[x, y].state == Cell.State.Alive)
-						p_automaton[x + (int)_position.x, y + (int)_position.y].state = _cells[x, y].state;
+						p_automaton[x + position.x, y + position.y].state = _cells[x, y].state;
 				}
 			}
 		}
