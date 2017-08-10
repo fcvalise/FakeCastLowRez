@@ -9,8 +9,8 @@ using UnityEngine;
 
 public class CellularAutomaton
 {
-	public CellularCell[,]				_cells;
-	public CellularCell[,]				_copy;
+	public Cell[,]						_cells;
+	public Cell[,]						_copy;
 
 	public Vector2Int					_size;
 	private bool						_aliveBorders;
@@ -24,14 +24,14 @@ public class CellularAutomaton
 		_size.x = width;
 		_size.y = height;
 		_aliveBorders = aliveBorders;
-		_cells = new CellularCell[width, height];
-		_copy = new CellularCell[width, height];
+		_cells = new Cell[width, height];
+		_copy = new Cell[width, height];
 
 		_visitAliveBorders = (int neighbourX, int neighbourY) =>
 		{
 			if (_copy.IsInBounds(neighbourX, neighbourY))
 			{
-				if (_copy[neighbourX, neighbourY].state == CellularCell.State.Alive)
+				if (_copy[neighbourX, neighbourY].state == Cell.State.Alive)
 				{
 					_aliveNeighbours++;
 				}
@@ -43,7 +43,7 @@ public class CellularAutomaton
 		};
 		_visitDeadBorders = (int neighbourX, int neighbourY) =>
 		{
-			if (_copy[neighbourX, neighbourY].state == CellularCell.State.Alive)
+			if (_copy[neighbourX, neighbourY].state == Cell.State.Alive)
 			{
 				_aliveNeighbours++;
 			}
@@ -75,7 +75,7 @@ public class CellularAutomaton
 		{
 			for (int y = 0; y < _size.y; y++)
 			{
-				_cells[x, y].state = Random.value < noise ? CellularCell.State.Alive : CellularCell.State.Dead;
+				_cells[x, y].state = Random.value < noise ? Cell.State.Alive : Cell.State.Dead;
 			}
 		}
 	}
@@ -101,34 +101,34 @@ public class CellularAutomaton
 				ComputeValue(ref _cells[x, y]);
 
 				if (_cells[x, y].value >= 10f)
-					_cells[x, y].state = CellularCell.State.Dead;
+					_cells[x, y].state = Cell.State.Dead;
 
 				_copy[x, y].value = _cells[x, y].value;
 			}
 		}
 	}
 
-	private void ComputeState(ref CellularCell cell, ref CellularCell _copy, int alive_cells)
+	private void ComputeState(ref Cell cell, ref Cell _copy, int alive_cells)
 	{					
-		if (_copy.state == CellularCell.State.Dead)
+		if (_copy.state == Cell.State.Dead)
 		{
 			if (cell.rulset.CanSpawn(alive_cells))
-				cell.state = CellularCell.State.Alive;
+				cell.state = Cell.State.Alive;
 			else
-				cell.state = CellularCell.State.Dead;
+				cell.state = Cell.State.Dead;
 		}
 		else
 		{
 			if (!cell.rulset.CanSurvive(alive_cells))
-				cell.state = CellularCell.State.Dead;
+				cell.state = Cell.State.Dead;
 			else
-				cell.state = CellularCell.State.Alive;
+				cell.state = Cell.State.Alive;
 		}
 	}
 
-	private void ComputeValue(ref CellularCell cell)
+	private void ComputeValue(ref Cell cell)
 	{
-		if (cell.state == CellularCell.State.Alive)
+		if (cell.state == Cell.State.Alive)
 			cell.value = Mathf.Clamp(cell.value + Time.deltaTime * 10f, 0f, 10f);
 		else
 			cell.value = Mathf.Clamp(cell.value - Time.deltaTime * 2f, 0f, 1f);

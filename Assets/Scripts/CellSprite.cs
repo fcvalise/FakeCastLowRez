@@ -2,26 +2,37 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CellSprite
+public class CellSprite : MonoBehaviour
 {
-	public	Texture2D				_spriteSheet;
-	public int						_cellSizeX;
+	public Texture2D				_spriteSheet;
 	public int						_numberOfSprites;
 	public bool						_isLoop;
 
-	private List<CellularCell[,]>	_cells;
+	private List<Cell[,]>			_cells;
+	private int						_cellSizeX;
 	private	int						_spriteCount;
 	private Vector2					_side = Vector2.down;
 	private int						_index = 0;
 
+	/*
 	public CellSprite(Texture2D p_spriteSheet, int p_numberOfSprites, bool p_isLoop)
 	{
 		_spriteSheet = p_spriteSheet;
 		_numberOfSprites = p_numberOfSprites;
-		_cells = new List<CellularCell[,]>();
+		_cells = new List<Cell[,]>();
 		_cellSizeX = _spriteSheet.width / p_numberOfSprites;
 		_isLoop = p_isLoop;
 
+		FillCells();
+	}
+	*/
+
+	public void Create()
+	{
+		_cells = new List<Cell[,]>();
+		_cellSizeX = _spriteSheet.width / _numberOfSprites;
+		if (_cellSizeX != _spriteSheet.height)
+			Debug.LogError("ERROR : CellSprite \"" + _spriteSheet.name + "\" width different of height not supported yet");
 		FillCells();
 	}
 
@@ -32,7 +43,7 @@ public class CellSprite
 		{
 			if (x % _cellSizeX == 0)
 			{
-				_cells.Add(new CellularCell[_cellSizeX, _spriteSheet.height]);
+				_cells.Add(new Cell[_cellSizeX, _spriteSheet.height]);
 				i = x / _cellSizeX;
 			}
 
@@ -45,21 +56,21 @@ public class CellSprite
 		}
 	}
 
-	private void FillOneCell(ref CellularCell p_cell, Color p_color)
+	private void FillOneCell(ref Cell p_cell, Color p_color)
 	{
 		if (p_color.a != 0)
 		{
 			p_cell.color = new ColorHSV(p_color);
-			p_cell.state = CellularCell.State.Alive;
+			p_cell.state = Cell.State.Alive;
 			p_cell.value = 1f;
 		}
 		else
 		{
-			p_cell.state = CellularCell.State.Dead;
+			p_cell.state = Cell.State.Dead;
 		}
 	}
 
-	public void Simulate(CellularCell[,] p_cells)
+	public void Simulate(Cell[,] p_cells)
 	{
 		PrintToCells(p_cells);
 		if (_index < _numberOfSprites - 1)
@@ -84,7 +95,7 @@ public class CellSprite
 			_side = p_side;
 	}
 
-	private void PrintToCells(CellularCell[,] p_cells)
+	private void PrintToCells(Cell[,] p_cells)
 	{
 		if (_side == Vector2.left)
 			CopyLeft(p_cells);
@@ -96,7 +107,7 @@ public class CellSprite
 			CopyUp(p_cells);
 	}
 
-	private void CopyUp(CellularCell[,] p_array)
+	private void CopyUp(Cell[,] p_array)
 	{
 		for (int y = 0; y < _spriteSheet.height; y++)
 		{
@@ -107,7 +118,7 @@ public class CellSprite
 		}
 	}
 
-	private void CopyDown(CellularCell[,] p_array)
+	private void CopyDown(Cell[,] p_array)
 	{
 		for (int y = 0; y < _spriteSheet.height; y++)
 		{
@@ -118,7 +129,7 @@ public class CellSprite
 		}
 	}
 
-	private void CopyLeft(CellularCell[,] p_array)
+	private void CopyLeft(Cell[,] p_array)
 	{
 		//TODO : Only working with square textures
 		for (int y = 0; y < _spriteSheet.height; y++)
@@ -130,7 +141,7 @@ public class CellSprite
 		}
 	}
 
-	private void CopyRight(CellularCell[,] p_array)
+	private void CopyRight(Cell[,] p_array)
 	{
 		//TODO : Only working with square textures
 		for (int y = 0; y < _spriteSheet.height; y++)
@@ -141,13 +152,10 @@ public class CellSprite
 			}
 		}
 	}
-
-	/*
-	 * DEBUG
-	 * 
+		
 	private void DebugCells()
 	{
-		foreach (CellularCell[,] cell in _cells)
+		foreach (Cell[,] cell in _cells)
 		{
 			string s = "";
 
@@ -165,5 +173,4 @@ public class CellSprite
 			Debug.Log(s);
 		}
 	}
-	*/
 }

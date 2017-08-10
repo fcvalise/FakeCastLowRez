@@ -5,55 +5,35 @@ using System;
 
 public class SpriteManager : MonoBehaviour
 {
-	public enum SpriteState
-	{
-		Idle,
-		Walk,
-		Lay,
-		CastStart,
-		CastIncant,
-		CastShoot,
-		None
-	}
+	public CellSprite[]						_spritesData;
+	public string							_initial;
 
-	[System.Serializable]
-	public struct SpriteData
-	{
-		public SpriteState	state;
-		public Texture2D	spriteSheet;
-		public int			numberOfSprites;
-		public bool			isLoop;
-		[HideInInspector]
-		public CellSprite	cellSprite;
-	}
-
-	public SpriteData[]							_spritesData;
-
-	private Dictionary<SpriteState, CellSprite>	_sprites;
-	private SpriteState							_state;
-	private Vector2								_side;
+	private Dictionary<string, CellSprite>	_sprites;
+	private string							_current;
+	private Vector2							_side;
 
 	void Start()
 	{
-		_sprites = new Dictionary<SpriteState, CellSprite>();
-		foreach (SpriteData data in _spritesData)
+		_sprites = new Dictionary<string, CellSprite>();
+		foreach (CellSprite sprite in _spritesData)
 		{
-			CellSprite cellSprite = new CellSprite(data.spriteSheet, data.numberOfSprites, data.isLoop);
-			_sprites.Add(data.state, cellSprite);
+			//TODO : Consider dynamic enum generation
+			_sprites.Add(sprite.name, sprite);
+			_sprites[sprite.name].Create();
 		}
-		_state = SpriteState.Idle;
+		_current = _initial;
 		_side = Vector2.down;
 	}
 
-	public void Simulate(CellularCell[, ] p_cells)
+	public void Simulate(Cell[, ] p_cells)
 	{
-		_sprites[_state].SetSide(_side);
-		_sprites[_state].Simulate(p_cells);
+		_sprites[_current].SetSide(_side);
+		_sprites[_current].Simulate(p_cells);
 	}
 
-	public SpriteState GetState()
+	public string GetState()
 	{
-		return _state;
+		return _current;
 	}
 
 	public void SetSide(Vector2 p_side)
@@ -62,17 +42,17 @@ public class SpriteManager : MonoBehaviour
 			_side = p_side;
 	}
 
-	public void PlayNext(SpriteState p_spriteState)
+	public void PlayNext(string p_spriteState)
 	{
-		if (_state != p_spriteState)
+		if (_current != p_spriteState)
 		{
-			_state = p_spriteState;
-			_sprites[_state].Play();
+			_current = p_spriteState;
+			_sprites[_current].Play();
 		}
 	}
 
 	public bool isFinished()
 	{
-		return _sprites[_state].isFinished();
+		return _sprites[_current].isFinished();
 	}
 }

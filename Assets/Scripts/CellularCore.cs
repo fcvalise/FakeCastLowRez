@@ -29,7 +29,7 @@ public class CellularCore : MonoBehaviour
 		_texture.Apply();
 		_image.texture = _texture;
 
-		_mainGrid = new MainGrid(_width, _height);
+		_mainGrid = new MainGrid();
 		_mainGrid.Setup();
 		_player.Setup();
 	}
@@ -60,7 +60,7 @@ public class CellularCore : MonoBehaviour
 			{
 				_mainGrid._automaton._cells[x, y].color.s = 1f - _mainGrid._automaton._cells[x, y].value;
 				_mainGrid._automaton._cells[x, y].color.a = Mathf.Clamp(_mainGrid._automaton._cells[x, y].value, 0f, 1f);
-				if (_mainGrid._staticGrid[x, y].state == CellularCell.State.Alive)
+				if (_mainGrid._staticGrid[x, y].state == Cell.State.Alive)
 				{
 					_pixels[y * _width + x] = _mainGrid._staticGrid[x, y].color.ToColor();
 				}

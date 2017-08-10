@@ -1,4 +1,4 @@
-﻿public struct CellularCell
+﻿public struct Cell
 {
 	public enum State
 	{

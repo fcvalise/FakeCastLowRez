@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(SpriteManager))]
-public class Player : MonoBehaviour, ICellularObject
+public class Player : ACellObject
 {
 	public enum PlayerState
 	{
@@ -10,7 +10,7 @@ public class Player : MonoBehaviour, ICellularObject
 		CastSkill
 	}
 
-	private CellularCell[,]		_cells;
+	private Cell[,]				_cells;
 	public Vector2				_bounds;
 
 	private SpriteManager		_spriteManager;
@@ -25,16 +25,16 @@ public class Player : MonoBehaviour, ICellularObject
 	private bool				_isSilence = false;
 	private PlayerState			_state = PlayerState.None;
 
-	public void Setup()
+	public override void Setup()
 	{
 		_spriteManager = GetComponent<SpriteManager>();
 		//TODO : To get from SpriteManager
 		_size = new Vector2(10, 10);
 		_position = new Vector2(64 / 2, 64 / 2);
-		_cells = new CellularCell[(int)_size.x, (int)_size.y];
+		_cells = new Cell[(int)_size.x, (int)_size.y];
 	}
 
-	public void Simulate()
+	public override void Simulate()
 	{
 		switch (_state)
 		{
@@ -91,18 +91,18 @@ public class Player : MonoBehaviour, ICellularObject
 		{
 			case PlayerState.CastSkill:
 			{
-				if (_spriteManager.GetState() != SpriteManager.SpriteState.CastIncant)
-					_spriteManager.PlayNext(SpriteManager.SpriteState.CastStart);
+				if (_spriteManager.GetState() != "player_cast_incant")
+					_spriteManager.PlayNext("player_cast_start");
 				if (_spriteManager.isFinished())
-					_spriteManager.PlayNext(SpriteManager.SpriteState.CastIncant);
+					_spriteManager.PlayNext("player_cast_incant");
 				break;
 			}
 			default:
 			{
 				if (_movement != Vector2.zero || _lastMovement != Vector2.zero)
-					_spriteManager.PlayNext(SpriteManager.SpriteState.Walk);
+					_spriteManager.PlayNext("player_walk");
 				else
-					_spriteManager.PlayNext(SpriteManager.SpriteState.Lay);
+					_spriteManager.PlayNext("player_lay");
 			}
 			break;
 		}
@@ -110,7 +110,7 @@ public class Player : MonoBehaviour, ICellularObject
 		_spriteManager.Simulate(_cells);
 	}
 
-	public void Add(CellularCell[,] p_automaton, CellularCell[,] p_staticGrid)
+	public override void Add(Cell[,] p_automaton, Cell[,] p_staticGrid)
 	{
 		for (int x = 0; x < _size.x; x++)
 		{
@@ -122,7 +122,7 @@ public class Player : MonoBehaviour, ICellularObject
 					p_staticGrid[x + (int)_position.x, y + (int)_position.y].state = _cells[x, y].state;
 					p_staticGrid[x + (int)_position.x, y + (int)_position.y].color = _cells[x, y].color;
 
-					if (_cells[x, y].state == CellularCell.State.Alive)
+					if (_cells[x, y].state == Cell.State.Alive)
 						p_automaton[x + (int)_position.x, y + (int)_position.y].state = _cells[x, y].state;
 				}
 			}
@@ -163,7 +163,7 @@ public class Player : MonoBehaviour, ICellularObject
 		{
 			for (int y = 0; y < _size.y; y++)
 			{
-				_cells[x, y].state = CellularCell.State.Alive;
+				_cells[x, y].state = Cell.State.Alive;
 				_cells[x, y].value = 1f;
 				_cells[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
 			}

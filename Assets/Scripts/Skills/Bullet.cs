@@ -2,38 +2,37 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Bullet : MonoBehaviour, ICellularObject
+public class Bullet : ACellObject
 {
 	public int					_speed;
 	public GameObject			_target;
 	public Vector2				_targetPosition;
-	public Texture2D			_spriteSheet;
+	public CellSprite			_sprite;
 
 	public Vector2				_bounds;
 
-	private CellSprite			_sprite;
-	private CellularCell[,]		_cells;
+	private Cell[,]				_cells;
 	private SpriteManager		_cellSprite;
 	private Vector2				_size;
 	private Vector2				_position;
 
-	public void Setup()
+	public override void Setup()
 	{
 		_position = new Vector2(10, 10);
-		_sprite = new CellSprite(_spriteSheet, 3, false);
+		_sprite.Create();
 		//TODO : To get from SpriteManager
 		_size = new Vector2(10, 10);
-		_cells = new CellularCell[(int)_size.x, (int)_size.y];
+		_cells = new Cell[(int)_size.x, (int)_size.y];
 	}
 
-	public void Simulate()
+	public override void Simulate()
 	{
 		Vector2 direction = (_targetPosition - _position).normalized;
 		_position += direction * _speed;
 		_sprite.Simulate(_cells);
 	}
 
-	public void Add(CellularCell[,] p_automaton, CellularCell[,] p_staticGrid)
+	public override void Add(Cell[,] p_automaton, Cell[,] p_staticGrid)
 	{
 		for (int x = 0; x < _size.x; x++)
 		{

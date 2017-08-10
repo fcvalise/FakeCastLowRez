@@ -1,34 +1,30 @@
 ﻿using UnityEngine;
 
-public class MainGrid : ICellularObject
+public class MainGrid : ACellObject
 {
 	public CellularAutomaton	_automaton;
-	public CellularCell[,]		_staticGrid;
+	public Cell[,]				_staticGrid;
 
 	private Ruleset				_ruleset = Ruleset.coral;
 	private float				_startNoise = 0.25f;
 	private bool				_aliveBorders = false;
 	private Texture2D			_texture;
 
-	public MainGrid(int p_width, int p_height)
+	public override void Setup()
 	{
-		_texture = (Texture2D)Resources.Load("Sprites/test_map_cpu");
+		_texture = (Texture2D)Resources.Load("Textures/test_map_cpu");
 		_automaton = new CellularAutomaton(_texture.width, _texture.height, _ruleset, _startNoise, _aliveBorders);
-		_staticGrid = new CellularCell[_texture.width, _texture.height];
-	}
-
-	public void Setup()
-	{
+		_staticGrid = new Cell[_texture.width, _texture.height];
 		FillOneRuleset(Ruleset.life);
 	}
 
-	public void Simulate()
+	public override void Simulate()
 	{
 		UpdateRuleset();
 		_automaton.Simulate();
 	}
 
-	public void Add(CellularCell[,] p_automaton, CellularCell[,] p_staticGrid) { }
+	public override void Add(Cell[,] p_automaton, Cell[,] p_staticGrid) { }
 
 	private void UpdateRuleset()
 	{
@@ -63,7 +59,10 @@ public class MainGrid : ICellularObject
 			{
 				_automaton._cells[x, y].rulset = p_ruleset;
 				_automaton._cells[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
-				_automaton._cells[x, y].state = CellularCell.State.Dead;
+				_automaton._cells[x, y].state = Cell.State.Dead;
+				_automaton._copy[x, y].rulset = p_ruleset;
+				_automaton._copy[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
+				_automaton._copy[x, y].state = Cell.State.Dead;
 			}
 		}
 	}
