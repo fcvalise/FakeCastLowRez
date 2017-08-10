@@ -9,69 +9,69 @@ namespace ProceduralToolkit
 {
 	public class CellularCore : MonoBehaviour
 	{
-		public RawImage		m_image;
-		public Player		m_player;
+		public RawImage		_image;
+		public Player		_player;
 
-		private const int	m_width = 64;
-		private const int	m_height = 64;
-		private Color[]		m_pixels = new Color[m_width * m_height];
-		private Texture2D	m_texture;
+		private const int	_width = 64;
+		private const int	_height = 64;
+		private Color[]		_pixels = new Color[_width * _height];
+		private Texture2D	_texture;
 
-		private float		m_speed = 30f;
-		private float		m_deltaSpeed = 0f;
+		private float		_speed = 30f;
+		private float		_deltaSpeed = 0f;
 
-		private MainGrid	m_mainGrid;
+		private MainGrid	_mainGrid;
 
 		private void Awake()
 		{
-			m_texture = new Texture2D(m_width, m_height, TextureFormat.ARGB32, false, true)
+			_texture = new Texture2D(_width, _height, TextureFormat.ARGB32, false, true)
 			{
 				filterMode = FilterMode.Point
 			};
-			m_texture.Apply();
-			m_image.texture = m_texture;
+			_texture.Apply();
+			_image.texture = _texture;
 
-			m_mainGrid = new MainGrid(m_width, m_height);
-			m_mainGrid.Setup();
-			m_player.Setup();
+			_mainGrid = new MainGrid(_width, _height);
+			_mainGrid.Setup();
+			_player.Setup();
 		}
 
 		private void Update()
 		{
 			Bullet[] bullets = FindObjectsOfType(typeof(Bullet)) as Bullet[];
-			m_deltaSpeed += Time.deltaTime;
-			if (m_deltaSpeed > 1f / m_speed)
+			_deltaSpeed += Time.deltaTime;
+			if (_deltaSpeed > 1f / _speed)
 			{
-				m_deltaSpeed = 0f;
-				m_player.Simulate();
+				_deltaSpeed = 0f;
+				_player.Simulate();
 				foreach (Bullet bullet in bullets)
 					bullet.Simulate();
-				m_mainGrid.Simulate();
-				m_player.Add(m_mainGrid.m_automaton.m_cells, m_mainGrid.m_staticGrid);
+				_mainGrid.Simulate();
+				_player.Add(_mainGrid._automaton._cells, _mainGrid._staticGrid);
 				foreach (Bullet bullet in bullets)
-					bullet.Add(m_mainGrid.m_automaton.m_cells, m_mainGrid.m_staticGrid);
+					bullet.Add(_mainGrid._automaton._cells, _mainGrid._staticGrid);
 				Draw();
 			}
 		}
 
 		private void Draw()
 		{
-			for (int x = 0; x < m_width; x++)
+			for (int x = 0; x < _width; x++)
 			{
-				for (int y = 0; y < m_height; y++)
+				for (int y = 0; y < _height; y++)
 				{
-					m_mainGrid.m_automaton.m_cells[x, y].color.s = 1f - m_mainGrid.m_automaton.m_cells[x, y].value;
-					m_mainGrid.m_automaton.m_cells[x, y].color.a = Mathf.Clamp(m_mainGrid.m_automaton.m_cells[x, y].value, 0f, 1f);
-					if (m_mainGrid.m_staticGrid[x, y].state == CellularCell.State.Alive)
+					_mainGrid._automaton._cells[x, y].color.s = 1f - _mainGrid._automaton._cells[x, y].value;
+					_mainGrid._automaton._cells[x, y].color.a = Mathf.Clamp(_mainGrid._automaton._cells[x, y].value, 0f, 1f);
+					if (_mainGrid._staticGrid[x, y].state == CellularCell.State.Alive)
 					{
-						m_pixels[y * m_width + x] = m_mainGrid.m_staticGrid[x, y].color.ToColor();
+						_pixels[y * _width + x] = _mainGrid._staticGrid[x, y].color.ToColor();
 					}
 					else
-						m_pixels[y * m_width + x] = m_mainGrid.m_automaton.m_cells[x, y].color.ToColor();
+						_pixels[y * _width + x] = _mainGrid._automaton._cells[x, y].color.ToColor();
 				}
 			}
-			m_texture.SetPixels(m_pixels);
-			m_texture.Apply();
+			_texture.SetPixels(_pixels);
+			_texture.Apply();
 		}
 	}
 }

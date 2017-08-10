@@ -29,53 +29,53 @@ namespace ProceduralToolkit
 			public CellSprite	cellSprite;
 		}
 
-		public SpriteData[]							m_spritesData;
+		public SpriteData[]							_spritesData;
 
-		private Dictionary<SpriteState, CellSprite>	m_sprites;
-		private SpriteState							m_state;
-		private Vector2Int							m_side;
+		private Dictionary<SpriteState, CellSprite>	_sprites;
+		private SpriteState							_state;
+		private Vector2								_side;
 
 		void Start()
 		{
-			m_sprites = new Dictionary<SpriteState, CellSprite>();
-			foreach (SpriteData data in m_spritesData)
+			_sprites = new Dictionary<SpriteState, CellSprite>();
+			foreach (SpriteData data in _spritesData)
 			{
 				CellSprite cellSprite = new CellSprite(data.spriteSheet, data.numberOfSprites, data.isLoop);
-				m_sprites.Add(data.state, cellSprite);
+				_sprites.Add(data.state, cellSprite);
 			}
-			m_state = SpriteState.Idle;
-			m_side = Vector2Int.down;
+			_state = SpriteState.Idle;
+			_side = Vector2.down;
 		}
 
-		public void Simulate(CellularCell[, ] cells)
+		public void Simulate(CellularCell[, ] p_cells)
 		{
-			m_sprites[m_state].SetSide(m_side);
-			m_sprites[m_state].Simulate(cells);
+			_sprites[_state].SetSide(_side);
+			_sprites[_state].Simulate(p_cells);
 		}
 
 		public SpriteState GetState()
 		{
-			return m_state;
+			return _state;
 		}
 
-		public void SetSide(Vector2Int side)
+		public void SetSide(Vector2 p_side)
 		{
-			if (side != Vector2Int.zero)
-				m_side = side;
+			if (p_side != Vector2.zero)
+				_side = p_side;
 		}
 
-		public void PlayNext(SpriteState spriteState)
+		public void PlayNext(SpriteState p_spriteState)
 		{
-			if (m_state != spriteState)
+			if (_state != p_spriteState)
 			{
-				m_state = spriteState;
-				m_sprites[m_state].Play();
+				_state = p_spriteState;
+				_sprites[_state].Play();
 			}
 		}
 
 		public bool isFinished()
 		{
-			return m_sprites[m_state].isFinished();
+			return _sprites[_state].isFinished();
 		}
 	}
 }

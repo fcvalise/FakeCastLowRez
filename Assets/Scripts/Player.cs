@@ -12,33 +12,33 @@ namespace ProceduralToolkit
 			CastSkill
 		}
 
-		private CellularCell[,]		m_cells;
-		public Vector2Int			m_bounds;
+		private CellularCell[,]		_cells;
+		public Vector2				_bounds;
 
-		private SpriteManager		m_spriteManager;
+		private SpriteManager		_spriteManager;
 
-		private Vector2Int			m_size;
+		private Vector2				_size;
 		[HideInInspector]
-		public Vector2Int			m_position ;
+		public Vector2				_position;
 
-		private Vector2Int			m_movement = Vector2Int.down;
-		private Vector2Int			m_lastMovement = Vector2Int.down;
+		private Vector2				_movement = Vector2.down;
+		private Vector2				_lastMovement = Vector2.down;
 
-		private bool				m_isSilence = false;
-		private PlayerState			m_state = PlayerState.None;
+		private bool				_isSilence = false;
+		private PlayerState			_state = PlayerState.None;
 
 		public void Setup()
 		{
-			m_spriteManager = GetComponent<SpriteManager>();
+			_spriteManager = GetComponent<SpriteManager>();
 			//TODO : To get from SpriteManager
-			m_size = new Vector2Int(10, 10);
-			m_position = new Vector2Int(64 / 2, 64 / 2);
-			m_cells = new CellularCell[m_size.x, m_size.y];
+			_size = new Vector2(10, 10);
+			_position = new Vector2(64 / 2, 64 / 2);
+			_cells = new CellularCell[(int)_size.x, (int)_size.y];
 		}
 
 		public void Simulate()
 		{
-			switch (m_state)
+			switch (_state)
 			{
 			case PlayerState.None:
 				UpdatePosition();
@@ -50,82 +50,82 @@ namespace ProceduralToolkit
 			}
 
 			UpdateSpriteManager();
-			m_lastMovement = m_movement;
+			_lastMovement = _movement;
 		}
 
 		private void Update()
 		{
-			m_movement = Vector2Int.zero;
+			_movement = Vector2.zero;
 
 			if (Input.anyKeyDown)
-				m_state = PlayerState.None;
+				_state = PlayerState.None;
 			if (Input.GetKeyDown(KeyCode.Space))
-				m_state = PlayerState.CastSkill;
+				_state = PlayerState.CastSkill;
 
-			if (m_state == PlayerState.None)
+			if (_state == PlayerState.None)
 			{
 				if (Input.GetKey(KeyCode.RightArrow))
-					m_movement += Vector2Int.right;
+					_movement += Vector2.right;
 				if (Input.GetKey(KeyCode.LeftArrow))
-					m_movement += Vector2Int.left;
+					_movement += Vector2.left;
 				if (Input.GetKey(KeyCode.UpArrow))
-					m_movement += Vector2Int.up;
+					_movement += Vector2.up;
 				if (Input.GetKey(KeyCode.DownArrow))
-					m_movement += Vector2Int.down;
+					_movement += Vector2.down;
 			}
 		}
 
 		private void UpdatePosition()
 		{
-			if (Mathf.Abs(m_lastMovement.x) == 1 && Mathf.Abs(m_lastMovement.y) == 1)
-				m_movement = Vector2Int.zero;
+			if (Mathf.Abs(_lastMovement.x) == 1 && Mathf.Abs(_lastMovement.y) == 1)
+				_movement = Vector2.zero;
 
-			m_position += m_movement;
-			m_position.x = Mathf.Clamp(m_position.x, 1, m_bounds.x - m_size.x);
-			m_position.y = Mathf.Clamp(m_position.y, 1, m_bounds.y - m_size.y);
+			_position += _movement;
+			_position.x = Mathf.Clamp(_position.x, 1, _bounds.x - _size.x);
+			_position.y = Mathf.Clamp(_position.y, 1, _bounds.y - _size.y);
 		}
 
 		private void UpdateSpriteManager()
 		{
-			m_spriteManager.SetSide(m_movement);
+			_spriteManager.SetSide(_movement);
 
-			switch (m_state)
+			switch (_state)
 			{
 				case PlayerState.CastSkill:
 				{
-					if (m_spriteManager.GetState() != SpriteManager.SpriteState.CastIncant)
-						m_spriteManager.PlayNext(SpriteManager.SpriteState.CastStart);
-					if (m_spriteManager.isFinished())
-						m_spriteManager.PlayNext(SpriteManager.SpriteState.CastIncant);
+					if (_spriteManager.GetState() != SpriteManager.SpriteState.CastIncant)
+						_spriteManager.PlayNext(SpriteManager.SpriteState.CastStart);
+					if (_spriteManager.isFinished())
+						_spriteManager.PlayNext(SpriteManager.SpriteState.CastIncant);
 					break;
 				}
 				default:
 				{
-					if (m_movement != Vector2Int.zero || m_lastMovement != Vector2Int.zero)
-						m_spriteManager.PlayNext(SpriteManager.SpriteState.Walk);
+					if (_movement != Vector2.zero || _lastMovement != Vector2.zero)
+						_spriteManager.PlayNext(SpriteManager.SpriteState.Walk);
 					else
-						m_spriteManager.PlayNext(SpriteManager.SpriteState.Lay);
+						_spriteManager.PlayNext(SpriteManager.SpriteState.Lay);
 				}
 				break;
 			}
 
-			m_spriteManager.Simulate(m_cells);
+			_spriteManager.Simulate(_cells);
 		}
 
-		public void Add(CellularCell[,] automaton, CellularCell[,] staticGrid)
+		public void Add(CellularCell[,] p_automaton, CellularCell[,] p_staticGrid)
 		{
-			for (int x = 0; x < m_size.x; x++)
+			for (int x = 0; x < _size.x; x++)
 			{
-				for (int y = 0; y < m_size.y; y++)
+				for (int y = 0; y < _size.y; y++)
 				{
-					if (x + m_position.x < m_bounds.x && y + m_position.y < m_bounds.y)
+					if (x + _position.x < _bounds.x && y + _position.y < _bounds.y)
 					{
-						staticGrid[x + m_position.x, y + m_position.y].value = m_cells[x, y].value;
-						staticGrid[x + m_position.x, y + m_position.y].state = m_cells[x, y].state;
-						staticGrid[x + m_position.x, y + m_position.y].color = m_cells[x, y].color;
+						p_staticGrid[x + (int)_position.x, y + (int)_position.y].value = _cells[x, y].value;
+						p_staticGrid[x + (int)_position.x, y + (int)_position.y].state = _cells[x, y].state;
+						p_staticGrid[x + (int)_position.x, y + (int)_position.y].color = _cells[x, y].color;
 
-						if (m_cells[x, y].state == CellularCell.State.Alive)
-							automaton[x + m_position.x, y + m_position.y].state = m_cells[x, y].state;
+						if (_cells[x, y].state == CellularCell.State.Alive)
+							p_automaton[x + (int)_position.x, y + (int)_position.y].state = _cells[x, y].state;
 					}
 				}
 			}
@@ -133,22 +133,22 @@ namespace ProceduralToolkit
 
 		public void SetState(Player.PlayerState p_state)
 		{
-			m_state = p_state;
+			_state = p_state;
 		}
 
 		public bool CanCastSkill()
 		{
-			return m_state == PlayerState.None && !m_isSilence;
+			return _state == PlayerState.None && !_isSilence;
 		}
 
 		public void Silence()
 		{
-			m_isSilence = true;
+			_isSilence = true;
 		}
 
 		public bool IsSilence()
 		{
-			return m_isSilence;
+			return _isSilence;
 		}
 
 		public GameObject GetTarget()
@@ -161,13 +161,13 @@ namespace ProceduralToolkit
 		 * 
 		private void Fill()
 		{
-			for (int x = 0; x < m_size.x; x++)
+			for (int x = 0; x < _size.x; x++)
 			{
-				for (int y = 0; y < m_size.y; y++)
+				for (int y = 0; y < _size.y; y++)
 				{
-					m_cells[x, y].state = CellularCell.State.Alive;
-					m_cells[x, y].value = 1f;
-					m_cells[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
+					_cells[x, y].state = CellularCell.State.Alive;
+					_cells[x, y].value = 1f;
+					_cells[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
 				}
 			}
 		}

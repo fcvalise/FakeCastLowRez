@@ -4,19 +4,19 @@ namespace ProceduralToolkit
 {
 	public class MainGrid : ICellularObject
 	{
-		public CellularAutomaton	m_automaton;
-		public CellularCell[,]		m_staticGrid;
+		public CellularAutomaton	_automaton;
+		public CellularCell[,]		_staticGrid;
 
-		private Ruleset				m_ruleset = Ruleset.coral;
-		private float				m_startNoise = 0.25f;
-		private bool				m_aliveBorders = false;
-		private Texture2D			m_texture;
+		private Ruleset				_ruleset = Ruleset.coral;
+		private float				_startNoise = 0.25f;
+		private bool				_aliveBorders = false;
+		private Texture2D			_texture;
 
-		public MainGrid(int width, int height)
+		public MainGrid(int p_width, int p_height)
 		{
-			m_texture = (Texture2D)Resources.Load("Sprites/test_map_cpu");
-			m_automaton = new CellularAutomaton(m_texture.width, m_texture.height, m_ruleset, m_startNoise, m_aliveBorders);
-			m_staticGrid = new CellularCell[m_texture.width, m_texture.height];
+			_texture = (Texture2D)Resources.Load("Sprites/test_map_cpu");
+			_automaton = new CellularAutomaton(_texture.width, _texture.height, _ruleset, _startNoise, _aliveBorders);
+			_staticGrid = new CellularCell[_texture.width, _texture.height];
 		}
 
 		public void Setup()
@@ -27,10 +27,10 @@ namespace ProceduralToolkit
 		public void Simulate()
 		{
 			UpdateRuleset();
-			m_automaton.Simulate();
+			_automaton.Simulate();
 		}
 
-		public void Add(CellularCell[,] automaton, CellularCell[,] staticGrid) { }
+		public void Add(CellularCell[,] p_automaton, CellularCell[,] p_staticGrid) { }
 
 		private void UpdateRuleset()
 		{
@@ -50,23 +50,22 @@ namespace ProceduralToolkit
 				SetRuleset(Ruleset.walledCities);
 		}
 
-		private void SetRuleset(Ruleset ruleset)
+		private void SetRuleset(Ruleset p_ruleset)
 		{
-			m_ruleset = ruleset;
-			m_automaton.SetRuleset(ruleset);
-			FillOneRuleset(ruleset);
-			Debug.Log(ruleset.ToString());
+			_ruleset = p_ruleset;
+			_automaton.SetRuleset(_ruleset);
+			FillOneRuleset(_ruleset);
 		}
 
-		private void FillOneRuleset(Ruleset ruleset)
+		private void FillOneRuleset(Ruleset p_ruleset)
 		{
-			for (int y = m_texture.height - 1; y >= 0; y--)
+			for (int y = _texture.height - 1; y >= 0; y--)
 			{
-				for (int x = m_texture.width - 1; x >= 0; x--)
+				for (int x = _texture.width - 1; x >= 0; x--)
 				{
-					m_automaton.m_cells[x, y].rulset = ruleset;
-					m_automaton.m_cells[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
-					m_automaton.m_cells[x, y].state = CellularCell.State.Dead;
+					_automaton._cells[x, y].rulset = p_ruleset;
+					_automaton._cells[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
+					_automaton._cells[x, y].state = CellularCell.State.Dead;
 				}
 			}
 		}
@@ -76,22 +75,22 @@ namespace ProceduralToolkit
 		 * 
 		private void FillFromTexture()
 		{
-			for (int y = m_texture.height - 1; y >= 0; y--)
+			for (int y = _texture.height - 1; y >= 0; y--)
 			{
-				for (int x = m_texture.width - 1; x >= 0; x--)
+				for (int x = _texture.width - 1; x >= 0; x--)
 				{
-					if (m_texture.GetPixel(x, y).a != 0)
+					if (_texture.GetPixel(x, y).a != 0)
 					{
-						m_automaton.m_cells[x, y].rulset = Ruleset.life;
-						m_automaton.m_cells[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
+						_automaton._cells[x, y].rulset = Ruleset.life;
+						_automaton._cells[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
 
-						m_automaton.m_copy[x, y].rulset = Ruleset.life;
-						m_automaton.m_copy[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
+						_automaton._copy[x, y].rulset = Ruleset.life;
+						_automaton._copy[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
 					}
 					else
 					{
-						m_automaton.m_cells[x, y].color = new ColorHSV(58f / 360f, 1f, 1f);
-						m_automaton.m_copy[x, y].color = new ColorHSV(58f / 360f, 1f, 1f);
+						_automaton._cells[x, y].color = new ColorHSV(58f / 360f, 1f, 1f);
+						_automaton._copy[x, y].color = new ColorHSV(58f / 360f, 1f, 1f);
 					}
 				}
 			}

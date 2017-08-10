@@ -10,43 +10,43 @@ namespace ProceduralToolkit
 
 	public class CellularAutomaton
 	{
-		public CellularCell[,]				m_cells;
-		public CellularCell[,]				m_copy;
+		public CellularCell[,]				_cells;
+		public CellularCell[,]				_copy;
 
-		public Vector2Int					m_size;
-		private bool						m_aliveBorders;
+		public Vector2Int					_size;
+		private bool						_aliveBorders;
 
-		private int							m_aliveNeighbours;
-		private readonly Action<int, int>	m_visitAliveBorders;
-		private readonly Action<int, int>	m_visitDeadBorders;
+		private int							_aliveNeighbours;
+		private readonly Action<int, int>	_visitAliveBorders;
+		private readonly Action<int, int>	_visitDeadBorders;
 
 		public CellularAutomaton(int width, int height, Ruleset ruleset, bool aliveBorders)
 		{
-			m_size.x = width;
-			m_size.y = height;
-			m_aliveBorders = aliveBorders;
-			m_cells = new CellularCell[width, height];
-			m_copy = new CellularCell[width, height];
+			_size.x = width;
+			_size.y = height;
+			_aliveBorders = aliveBorders;
+			_cells = new CellularCell[width, height];
+			_copy = new CellularCell[width, height];
 
-			m_visitAliveBorders = (int neighbourX, int neighbourY) =>
+			_visitAliveBorders = (int neighbourX, int neighbourY) =>
 			{
-				if (m_copy.IsInBounds(neighbourX, neighbourY))
+				if (_copy.IsInBounds(neighbourX, neighbourY))
 				{
-					if (m_copy[neighbourX, neighbourY].state == CellularCell.State.Alive)
+					if (_copy[neighbourX, neighbourY].state == CellularCell.State.Alive)
 					{
-						m_aliveNeighbours++;
+						_aliveNeighbours++;
 					}
 				}
 				else
 				{
-					m_aliveNeighbours++;
+					_aliveNeighbours++;
 				}
 			};
-			m_visitDeadBorders = (int neighbourX, int neighbourY) =>
+			_visitDeadBorders = (int neighbourX, int neighbourY) =>
 			{
-				if (m_copy[neighbourX, neighbourY].state == CellularCell.State.Alive)
+				if (_copy[neighbourX, neighbourY].state == CellularCell.State.Alive)
 				{
-					m_aliveNeighbours++;
+					_aliveNeighbours++;
 				}
 			};
 
@@ -60,23 +60,23 @@ namespace ProceduralToolkit
 
 		public void SetRuleset(Ruleset ruleset)
 		{
-			for (int x = 0; x < m_size.x; x++)
+			for (int x = 0; x < _size.x; x++)
 			{
-				for (int y = 0; y < m_size.y; y++)
+				for (int y = 0; y < _size.y; y++)
 				{
-					m_cells[x, y].rulset = ruleset;
-					m_copy[x, y].rulset = ruleset;
+					_cells[x, y].rulset = ruleset;
+					_copy[x, y].rulset = ruleset;
 				}
 			}
 		}
 
 		public void FillWithNoise(float noise)
 		{
-			for (int x = 0; x < m_size.x; x++)
+			for (int x = 0; x < _size.x; x++)
 			{
-				for (int y = 0; y < m_size.y; y++)
+				for (int y = 0; y < _size.y; y++)
 				{
-					m_cells[x, y].state = Random.value < noise ? CellularCell.State.Alive : CellularCell.State.Dead;
+					_cells[x, y].state = Random.value < noise ? CellularCell.State.Alive : CellularCell.State.Dead;
 				}
 			}
 		}
@@ -91,36 +91,36 @@ namespace ProceduralToolkit
 
 		public void Simulate()
 		{
-			PTUtils.Swap(ref m_cells, ref m_copy);
-			for (int x = 0; x < m_size.x; x++)
+			PTUtils.Swap(ref _cells, ref _copy);
+			for (int x = 0; x < _size.x; x++)
 			{
-				for (int y = 0; y < m_size.y; y++)
+				for (int y = 0; y < _size.y; y++)
 				{
-					int alivem_cells = CountAliveNeighbourm_cells(x, y);
+					int alive_cells = CountAliveNeighbour_cells(x, y);
 
-					ComputeState(ref m_cells[x, y], ref m_copy[x, y], alivem_cells);
-					ComputeValue(ref m_cells[x, y]);
+					ComputeState(ref _cells[x, y], ref _copy[x, y], alive_cells);
+					ComputeValue(ref _cells[x, y]);
 
-					if (m_cells[x, y].value >= 10f)
-						m_cells[x, y].state = CellularCell.State.Dead;
+					if (_cells[x, y].value >= 10f)
+						_cells[x, y].state = CellularCell.State.Dead;
 
-					m_copy[x, y].value = m_cells[x, y].value;
+					_copy[x, y].value = _cells[x, y].value;
 				}
 			}
 		}
 
-		private void ComputeState(ref CellularCell cell, ref CellularCell m_copy, int alivem_cells)
+		private void ComputeState(ref CellularCell cell, ref CellularCell _copy, int alive_cells)
 		{					
-			if (m_copy.state == CellularCell.State.Dead)
+			if (_copy.state == CellularCell.State.Dead)
 			{
-				if (cell.rulset.CanSpawn(alivem_cells))
+				if (cell.rulset.CanSpawn(alive_cells))
 					cell.state = CellularCell.State.Alive;
 				else
 					cell.state = CellularCell.State.Dead;
 			}
 			else
 			{
-				if (!cell.rulset.CanSurvive(alivem_cells))
+				if (!cell.rulset.CanSurvive(alive_cells))
 					cell.state = CellularCell.State.Dead;
 				else
 					cell.state = CellularCell.State.Alive;
@@ -135,18 +135,18 @@ namespace ProceduralToolkit
 				cell.value = Mathf.Clamp(cell.value - Time.deltaTime * 2f, 0f, 1f);
 		}
 
-		private int CountAliveNeighbourm_cells(int x, int y)
+		private int CountAliveNeighbour_cells(int x, int y)
 		{
-			m_aliveNeighbours = 0;
-			if (m_aliveBorders)
+			_aliveNeighbours = 0;
+			if (_aliveBorders)
 			{
-				m_copy.VisitMooreNeighbours(x, y, false, m_visitAliveBorders);
+				_copy.VisitMooreNeighbours(x, y, false, _visitAliveBorders);
 			}
 			else
 			{
-				m_copy.VisitMooreNeighbours(x, y, true, m_visitDeadBorders);
+				_copy.VisitMooreNeighbours(x, y, true, _visitDeadBorders);
 			}
-			return m_aliveNeighbours;
+			return _aliveNeighbours;
 		}
 	}
 }

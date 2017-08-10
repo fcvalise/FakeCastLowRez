@@ -8,6 +8,6 @@ namespace ProceduralToolkit
 	{
 		void Setup();
 		void Simulate();
-		void Add(CellularCell[,] automaton, CellularCell[,] staticGrid);
+		void Add(CellularCell[,] p_automaton, CellularCell[,] p_staticGrid);
 	}
 }

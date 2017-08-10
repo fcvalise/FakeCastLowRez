@@ -7,140 +7,136 @@ namespace ProceduralToolkit
 {
 	public class CellSprite
 	{
-		private List<CellularCell[,]>	m_cells;
-		private	Texture2D				m_spriteSheet;
-		private int						m_cellSizeX;
-		private int						m_numberOfSprites;
-		private bool					m_isLoop;
+		public	Texture2D				_spriteSheet;
+		public int						_cellSizeX;
+		public int						_numberOfSprites;
+		public bool						_isLoop;
 
-		private	int						m_spriteCount;
-		private Vector2Int				m_side = Vector2Int.down;
-		private int						m_index = 0;
+		private List<CellularCell[,]>	_cells;
+		private	int						_spriteCount;
+		private Vector2					_side = Vector2.down;
+		private int						_index = 0;
 
-		public CellSprite(Texture2D spriteSheet, int numberOfSprites, bool isLoop)
+		void Awake()
 		{
-			m_spriteSheet = spriteSheet;
-			m_numberOfSprites = numberOfSprites;
-			m_cells = new List<CellularCell[,]>();
-			m_cellSizeX = m_spriteSheet.width / numberOfSprites;
-			m_isLoop = isLoop;
-
+			_cells = new List<CellularCell[,]>();
+			_cellSizeX = _spriteSheet.width / _numberOfSprites;
 			FillCells();
 		}
 
 		private void FillCells()
 		{
 			int i = 0;
-			for (int x = 0 ; x < m_spriteSheet.width; x++)
+			for (int x = 0 ; x < _spriteSheet.width; x++)
 			{
-				if (x % m_cellSizeX == 0)
+				if (x % _cellSizeX == 0)
 				{
-					m_cells.Add(new CellularCell[m_cellSizeX, m_spriteSheet.height]);
-					i = x / m_cellSizeX;
+					_cells.Add(new CellularCell[_cellSizeX, _spriteSheet.height]);
+					i = x / _cellSizeX;
 				}
 
-				for (int y = 0; y < m_spriteSheet.height; y++)
+				for (int y = 0; y < _spriteSheet.height; y++)
 				{
-					Color color = m_spriteSheet.GetPixel(x, m_spriteSheet.height - y - 1);
+					Color color = _spriteSheet.GetPixel(x, _spriteSheet.height - y - 1);
 					//TODO : Add possibility to fill in a different way
-					FillOneCell(ref m_cells[i][x - i * m_cellSizeX, y], color);
+					FillOneCell(ref _cells[i][x - i * _cellSizeX, y], color);
 				}
 			}
 		}
 
-		private void FillOneCell(ref CellularCell cell, Color color)
+		private void FillOneCell(ref CellularCell p_cell, Color p_color)
 		{
-			if (color.a != 0)
+			if (p_color.a != 0)
 			{
-				cell.color = new ColorHSV(color);
-				cell.state = CellularCell.State.Alive;
-				cell.value = 1f;
+				p_cell.color = new ColorHSV(p_color);
+				p_cell.state = CellularCell.State.Alive;
+				p_cell.value = 1f;
 			}
 			else
 			{
-				cell.state = CellularCell.State.Dead;
+				p_cell.state = CellularCell.State.Dead;
 			}
 		}
 
-		public void Simulate(CellularCell[,] cells)
+		public void Simulate(CellularCell[,] p_cells)
 		{
-			PrintToCells(cells);
-			if (m_index < m_numberOfSprites - 1)
-				m_index++;
-			else if (m_isLoop)
-				m_index = 0;
+			PrintToCells(p_cells);
+			if (_index < _numberOfSprites - 1)
+				_index++;
+			else if (_isLoop)
+				_index = 0;
 		}
 
 		public void Play()
 		{
-			m_index = 0;
+			_index = 0;
 		}
 
 		public bool isFinished()
 		{
-			return m_index == m_numberOfSprites - 1;
+			return _index == _numberOfSprites - 1;
 		}
 
-		public void SetSide(Vector2Int side)
+		public void SetSide(Vector2 p_side)
 		{
-			if (side == Vector2Int.left || side == Vector2Int.right || side == Vector2Int.up || side == Vector2Int.down)
-				m_side = side;
+			if (p_side == Vector2.left || p_side == Vector2.right || p_side == Vector2.up || p_side == Vector2.down)
+				_side = p_side;
 		}
 
-		private void PrintToCells(CellularCell[,] cells)
+		private void PrintToCells(CellularCell[,] p_cells)
 		{
-			if (m_side == Vector2Int.left)
-				CopyLeft(cells);
-			else if (m_side == Vector2Int.right)
-				CopyRight(cells);
-			else if (m_side == Vector2Int.down)
-				CopyDown(cells);
-			else if (m_side == Vector2Int.up)
-				CopyUp(cells);
+			if (_side == Vector2.left)
+				CopyLeft(p_cells);
+			else if (_side == Vector2.right)
+				CopyRight(p_cells);
+			else if (_side == Vector2.down)
+				CopyDown(p_cells);
+			else if (_side == Vector2.up)
+				CopyUp(p_cells);
 		}
 
-		private void CopyUp(CellularCell[,] array)
+		private void CopyUp(CellularCell[,] p_array)
 		{
-			for (int y = 0; y < m_spriteSheet.height; y++)
+			for (int y = 0; y < _spriteSheet.height; y++)
 			{
-				for (int x = 0 ; x < m_cellSizeX; x++)
+				for (int x = 0 ; x < _cellSizeX; x++)
 				{
-					array[x, y] = m_cells[m_index][x, y];
+					p_array[x, y] = _cells[_index][x, y];
 				}
 			}
 		}
 
-		private void CopyDown(CellularCell[,] array)
+		private void CopyDown(CellularCell[,] p_array)
 		{
-			for (int y = 0; y < m_spriteSheet.height; y++)
+			for (int y = 0; y < _spriteSheet.height; y++)
 			{
-				for (int x = 0 ; x < m_cellSizeX; x++)
+				for (int x = 0 ; x < _cellSizeX; x++)
 				{
-					array[x, y] = m_cells[m_index][x, m_spriteSheet.height - 1 - y];
+					p_array[x, y] = _cells[_index][x, _spriteSheet.height - 1 - y];
 				}
 			}
 		}
 
-		private void CopyLeft(CellularCell[,] array)
+		private void CopyLeft(CellularCell[,] p_array)
 		{
 			//TODO : Only working with square textures
-			for (int y = 0; y < m_spriteSheet.height; y++)
+			for (int y = 0; y < _spriteSheet.height; y++)
 			{
-				for (int x = 0 ; x < m_cellSizeX; x++)
+				for (int x = 0 ; x < _cellSizeX; x++)
 				{
-					array[y, x] = m_cells[m_index][x, m_spriteSheet.height - 1 - y];
+					p_array[y, x] = _cells[_index][x, _spriteSheet.height - 1 - y];
 				}
 			}
 		}
 
-		private void CopyRight(CellularCell[,] array)
+		private void CopyRight(CellularCell[,] p_array)
 		{
 			//TODO : Only working with square textures
-			for (int y = 0; y < m_spriteSheet.height; y++)
+			for (int y = 0; y < _spriteSheet.height; y++)
 			{
-				for (int x = 0 ; x < m_cellSizeX; x++)
+				for (int x = 0 ; x < _cellSizeX; x++)
 				{
-					array[y, x] = m_cells[m_index][x, y];
+					p_array[y, x] = _cells[_index][x, y];
 				}
 			}
 		}
@@ -150,13 +146,13 @@ namespace ProceduralToolkit
 		 * 
 		private void DebugCells()
 		{
-			foreach (CellularCell[,] cell in m_cells)
+			foreach (CellularCell[,] cell in _cells)
 			{
 				string s = "";
 
-				for (int y = 0; y < m_spriteSheet.height; y++)
+				for (int y = 0; y < _spriteSheet.height; y++)
 				{
-					for (int x = 0 ; x < m_cellSizeX; x++)
+					for (int x = 0 ; x < _cellSizeX; x++)
 					{
 						if (cell[x, y].color.a == 0)
 							s += "o";

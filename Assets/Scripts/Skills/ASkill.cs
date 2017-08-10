@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using ProceduralToolkit;
 
-public abstract class ASkill : MonoBehaviour {
-
-	enum SkillState {
+public abstract class ASkill : MonoBehaviour
+{
+	enum SkillState
+	{
 		Waiting,
 		Casting,
 		Cooldown
@@ -20,12 +21,14 @@ public abstract class ASkill : MonoBehaviour {
 
 	string _key;
 
-	void Awake() {
+	void Awake()
+	{
 		_state = SkillState.Waiting;
 		_owner = GetComponent<Player>();
 	}
 
-	protected void Init(float p_castDuration, float p_cooldownDuration, string key) {
+	protected void Init(float p_castDuration, float p_cooldownDuration, string key)
+	{
 		_castDuration = p_castDuration;
 		_cooldownDuration = p_cooldownDuration;
 		_key = key;
@@ -33,10 +36,13 @@ public abstract class ASkill : MonoBehaviour {
 
 	// TODO update cast bar
 	// Add input in player
-	void Update() {
-		switch (_state) {
+	void Update()
+	{
+		switch (_state)
+		{
 		case SkillState.Waiting:
-			if (_owner.CanCastSkill() && Input.GetKeyDown(_key)) {
+			if (_owner.CanCastSkill() && Input.GetKeyDown(_key))
+			{
 				_state = SkillState.Casting;
 				_castTimer = _castDuration;
 				_owner.SetState(Player.PlayerState.CastSkill);
@@ -46,11 +52,14 @@ public abstract class ASkill : MonoBehaviour {
 		case SkillState.Casting:
 			_castTimer -= Time.deltaTime;
 
-			if (_owner.IsSilence()) {
+			if (_owner.IsSilence())
+			{
 				_cooldown = _cooldownDuration;
 				_state = SkillState.Cooldown;
 				_owner.SetState(Player.PlayerState.None);
-			} else if (_castTimer <= 0.0f) {
+			}
+			else if (_castTimer <= 0.0f)
+			{
 				Cast(_owner);
 				_cooldown = _cooldownDuration;
 				_state = SkillState.Cooldown;
@@ -60,7 +69,8 @@ public abstract class ASkill : MonoBehaviour {
 
 		case SkillState.Cooldown:
 			_cooldown = Mathf.Clamp(_cooldown - Time.deltaTime, 0.0f, _cooldownDuration);
-			if (_cooldown <= 0.0f) {
+			if (_cooldown <= 0.0f)
+			{
 				_state = SkillState.Waiting;
 			}
 			break;
@@ -70,7 +80,8 @@ public abstract class ASkill : MonoBehaviour {
 		}
 	}
 
-	void OnGUI() {
+	void OnGUI()
+	{
 		GUI.Label(new Rect(10, 10, 500, 20), "Skill : ");
 		GUI.Label(new Rect(10, 150, 500, 20), "Remaining cooldown " + _cooldown.ToString());
 		GUI.Label(new Rect(10, 170, 500, 20), "Casting Time " + _castTimer.ToString() + "/" + _castDuration.ToString());
