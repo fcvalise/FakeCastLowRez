@@ -9,8 +9,6 @@ public class Bullet : ACellObject
 	public Vector2				_targetPosition;
 	public CellSprite			_sprite;
 
-	public Vector2				_bounds;
-
 	private Cell[,]				_cells;
 	private SpriteManager		_cellSprite;
 	private Vector2				_size;
@@ -38,7 +36,7 @@ public class Bullet : ACellObject
 		{
 			for (int y = 0; y < _size.y; y++)
 			{
-				if (x + _position.x < _bounds.x && y + _position.y < _bounds.y)
+				if (x + _position.x < Core._width && y + _position.y < Core._height)
 				{
 					p_staticGrid[x + (int)_position.x, y + (int)_position.y].value = _cells[x, y].value;
 					p_staticGrid[x + (int)_position.x, y + (int)_position.y].state = _cells[x, y].state;

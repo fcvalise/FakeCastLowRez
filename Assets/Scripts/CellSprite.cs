@@ -14,19 +14,6 @@ public class CellSprite : MonoBehaviour
 	private Vector2					_side = Vector2.down;
 	private int						_index = 0;
 
-	/*
-	public CellSprite(Texture2D p_spriteSheet, int p_numberOfSprites, bool p_isLoop)
-	{
-		_spriteSheet = p_spriteSheet;
-		_numberOfSprites = p_numberOfSprites;
-		_cells = new List<Cell[,]>();
-		_cellSizeX = _spriteSheet.width / p_numberOfSprites;
-		_isLoop = p_isLoop;
-
-		FillCells();
-	}
-	*/
-
 	public void Create()
 	{
 		_cells = new List<Cell[,]>();

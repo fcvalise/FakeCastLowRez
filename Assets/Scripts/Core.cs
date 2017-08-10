@@ -2,16 +2,17 @@
 using UnityEngine.UI;
 
 //
-// MAIN LOOP OF THE GAME
+// CORE LOOP OF THE GAME
 //
 
-public class CellularCore : MonoBehaviour
+public class Core : MonoBehaviour
 {
+	public const int	_width = 64;
+	public const int	_height = 64;
+
 	public RawImage		_image;
 	public Player		_player;
 
-	private const int	_width = 64;
-	private const int	_height = 64;
 	private Color[]		_pixels = new Color[_width * _height];
 	private Texture2D	_texture;
 

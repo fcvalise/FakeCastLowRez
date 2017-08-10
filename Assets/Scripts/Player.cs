@@ -11,10 +11,7 @@ public class Player : ACellObject
 	}
 
 	private Cell[,]				_cells;
-	public Vector2				_bounds;
-
 	private SpriteManager		_spriteManager;
-
 	private Vector2				_size;
 	[HideInInspector]
 	public Vector2				_position;
@@ -79,8 +76,8 @@ public class Player : ACellObject
 			_movement = Vector2.zero;
 
 		_position += _movement;
-		_position.x = Mathf.Clamp(_position.x, 1, _bounds.x - _size.x);
-		_position.y = Mathf.Clamp(_position.y, 1, _bounds.y - _size.y);
+		_position.x = Mathf.Clamp(_position.x, 1, Core._width - _size.x);
+		_position.y = Mathf.Clamp(_position.y, 1, Core._height - _size.y);
 	}
 
 	private void UpdateSpriteManager()
@@ -116,7 +113,7 @@ public class Player : ACellObject
 		{
 			for (int y = 0; y < _size.y; y++)
 			{
-				if (x + _position.x < _bounds.x && y + _position.y < _bounds.y)
+				if (x + _position.x < Core._width && y + _position.y < Core._height)
 				{
 					p_staticGrid[x + (int)_position.x, y + (int)_position.y].value = _cells[x, y].value;
 					p_staticGrid[x + (int)_position.x, y + (int)_position.y].state = _cells[x, y].state;

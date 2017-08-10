@@ -8,13 +8,12 @@ public class MainGrid : ACellObject
 	private Ruleset				_ruleset = Ruleset.coral;
 	private float				_startNoise = 0.25f;
 	private bool				_aliveBorders = false;
-	private Texture2D			_texture;
 
 	public override void Setup()
 	{
-		_texture = (Texture2D)Resources.Load("Textures/test_map_cpu");
-		_automaton = new CellularAutomaton(_texture.width, _texture.height, _ruleset, _startNoise, _aliveBorders);
-		_staticGrid = new Cell[_texture.width, _texture.height];
+		//_texture = (Texture2D)Resources.Load("Textures/test_map_cpu");
+		_automaton = new CellularAutomaton(Core._width, Core._height, _ruleset, _startNoise, _aliveBorders);
+		_staticGrid = new Cell[Core._width, Core._height];
 		FillOneRuleset(Ruleset.life);
 	}
 
@@ -53,9 +52,9 @@ public class MainGrid : ACellObject
 
 	private void FillOneRuleset(Ruleset p_ruleset)
 	{
-		for (int y = _texture.height - 1; y >= 0; y--)
+		for (int y = Core._width - 1; y >= 0; y--)
 		{
-			for (int x = _texture.width - 1; x >= 0; x--)
+			for (int x = Core._height - 1; x >= 0; x--)
 			{
 				_automaton._cells[x, y].rulset = p_ruleset;
 				_automaton._cells[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
@@ -68,7 +67,7 @@ public class MainGrid : ACellObject
 	}
 
 	/*
-	 * Not to remove
+	 * Do not remove
 	 * 
 	private void FillFromTexture()
 	{
