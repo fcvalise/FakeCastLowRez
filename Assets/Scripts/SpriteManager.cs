@@ -5,9 +5,11 @@ using System;
 
 public class SpriteManager : MonoBehaviour
 {
-	public CellSprite[]						_spritesData;
 	public string							_initial;
+	public CellSprite[]						_spritesData;
 
+	//[HideInInspector]
+	//public Vector2Int						_size;
 	private Dictionary<string, CellSprite>	_sprites;
 	private string							_current;
 	private Vector2							_side;
@@ -21,7 +23,7 @@ public class SpriteManager : MonoBehaviour
 			_sprites.Add(sprite.name, sprite);
 			_sprites[sprite.name].Create();
 		}
-		_current = _initial;
+		PlayNext(_initial);
 		_side = Vector2.down;
 	}
 
@@ -48,6 +50,7 @@ public class SpriteManager : MonoBehaviour
 		{
 			_current = p_spriteState;
 			_sprites[_current].Play();
+			//_size = _sprites[_current]._size;
 		}
 	}
 

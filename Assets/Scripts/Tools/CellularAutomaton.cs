@@ -129,9 +129,9 @@ public class CellularAutomaton
 	private void ComputeValue(ref Cell cell)
 	{
 		if (cell.state == Cell.State.Alive)
-			cell.value = Mathf.Clamp(cell.value + Time.deltaTime * 10f, 0f, 10f);
+			cell.value = 1f;//Mathf.Clamp(cell.value + Time.deltaTime * 10f, 0f, 10f);
 		else
-			cell.value = Mathf.Clamp(cell.value - Time.deltaTime * 2f, 0f, 1f);
+			cell.value = Mathf.Clamp(cell.value - Time.deltaTime * 5f, 0f, 1f);
 	}
 
 	private int CountAliveNeighbour_cells(int x, int y)

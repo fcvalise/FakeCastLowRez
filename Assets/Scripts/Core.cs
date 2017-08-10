@@ -11,7 +11,8 @@ public class Core : MonoBehaviour
 	public const int	_height = 64;
 
 	public RawImage		_image;
-	public Player		_player;
+	public Player		_player1;
+	public Player		_player2;
 
 	private Color[]		_pixels = new Color[_width * _height];
 	private Texture2D	_texture;
@@ -32,7 +33,8 @@ public class Core : MonoBehaviour
 
 		_mainGrid = new MainGrid();
 		_mainGrid.Setup();
-		_player.Setup();
+		_player1.Setup();
+		_player2.Setup();
 	}
 
 	private void Update()
@@ -42,11 +44,13 @@ public class Core : MonoBehaviour
 		if (_deltaSpeed > 1f / _speed)
 		{
 			_deltaSpeed = 0f;
-			_player.Simulate();
+			_player1.Simulate();
+			_player2.Simulate();
 			foreach (Bullet bullet in bullets)
 				bullet.Simulate();
 			_mainGrid.Simulate();
-			_player.Add(_mainGrid._automaton._cells, _mainGrid._staticGrid);
+			_player1.Add(_mainGrid._automaton._cells, _mainGrid._staticGrid);
+			_player2.Add(_mainGrid._automaton._cells, _mainGrid._staticGrid);
 			foreach (Bullet bullet in bullets)
 				bullet.Add(_mainGrid._automaton._cells, _mainGrid._staticGrid);
 			Draw();
@@ -67,6 +71,7 @@ public class Core : MonoBehaviour
 				}
 				else
 					_pixels[y * _width + x] = _mainGrid._automaton._cells[x, y].color.ToColor();
+				_mainGrid._staticGrid[x, y].state = Cell.State.Dead;
 			}
 		}
 		_texture.SetPixels(_pixels);

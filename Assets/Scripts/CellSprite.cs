@@ -7,9 +7,11 @@ public class CellSprite : MonoBehaviour
 	public Texture2D				_spriteSheet;
 	public int						_numberOfSprites;
 	public bool						_isLoop;
+	public bool						_printOnAutomaton;
 
+	[HideInInspector]
+	public Vector2Int				_size;
 	private List<Cell[,]>			_cells;
-	private int						_cellSizeX;
 	private	int						_spriteCount;
 	private Vector2					_side = Vector2.down;
 	private int						_index = 0;
@@ -17,8 +19,8 @@ public class CellSprite : MonoBehaviour
 	public void Create()
 	{
 		_cells = new List<Cell[,]>();
-		_cellSizeX = _spriteSheet.width / _numberOfSprites;
-		if (_cellSizeX != _spriteSheet.height)
+		_size = new Vector2Int(_spriteSheet.width / _numberOfSprites, _spriteSheet.height);
+		if (_size.x != _size.y)
 			Debug.LogError("ERROR : CellSprite \"" + _spriteSheet.name + "\" width different of height not supported yet");
 		FillCells();
 	}
@@ -28,17 +30,17 @@ public class CellSprite : MonoBehaviour
 		int i = 0;
 		for (int x = 0 ; x < _spriteSheet.width; x++)
 		{
-			if (x % _cellSizeX == 0)
+			if (x % _size.x == 0)
 			{
-				_cells.Add(new Cell[_cellSizeX, _spriteSheet.height]);
-				i = x / _cellSizeX;
+				_cells.Add(new Cell[_size.x, _size.y]);
+				i = x / _size.x;
 			}
 
-			for (int y = 0; y < _spriteSheet.height; y++)
+			for (int y = 0; y < _size.y; y++)
 			{
-				Color color = _spriteSheet.GetPixel(x, _spriteSheet.height - y - 1);
+				Color color = _spriteSheet.GetPixel(x, _size.y - y - 1);
 				//TODO : Add possibility to fill in a different way
-				FillOneCell(ref _cells[i][x - i * _cellSizeX, y], color);
+				FillOneCell(ref _cells[i][x - i * _size.x, y], color);
 			}
 		}
 	}
@@ -96,9 +98,9 @@ public class CellSprite : MonoBehaviour
 
 	private void CopyUp(Cell[,] p_array)
 	{
-		for (int y = 0; y < _spriteSheet.height; y++)
+		for (int y = 0; y < _size.y; y++)
 		{
-			for (int x = 0 ; x < _cellSizeX; x++)
+			for (int x = 0 ; x < _size.x; x++)
 			{
 				p_array[x, y] = _cells[_index][x, y];
 			}
@@ -107,11 +109,11 @@ public class CellSprite : MonoBehaviour
 
 	private void CopyDown(Cell[,] p_array)
 	{
-		for (int y = 0; y < _spriteSheet.height; y++)
+		for (int y = 0; y < _size.y; y++)
 		{
-			for (int x = 0 ; x < _cellSizeX; x++)
+			for (int x = 0 ; x < _size.x; x++)
 			{
-				p_array[x, y] = _cells[_index][x, _spriteSheet.height - 1 - y];
+				p_array[x, y] = _cells[_index][x, _size.y - 1 - y];
 			}
 		}
 	}
@@ -119,11 +121,11 @@ public class CellSprite : MonoBehaviour
 	private void CopyLeft(Cell[,] p_array)
 	{
 		//TODO : Only working with square textures
-		for (int y = 0; y < _spriteSheet.height; y++)
+		for (int y = 0; y < _size.y; y++)
 		{
-			for (int x = 0 ; x < _cellSizeX; x++)
+			for (int x = 0 ; x < _size.x; x++)
 			{
-				p_array[y, x] = _cells[_index][x, _spriteSheet.height - 1 - y];
+				p_array[y, x] = _cells[_index][x, _size.y - 1 - y];
 			}
 		}
 	}
@@ -131,9 +133,9 @@ public class CellSprite : MonoBehaviour
 	private void CopyRight(Cell[,] p_array)
 	{
 		//TODO : Only working with square textures
-		for (int y = 0; y < _spriteSheet.height; y++)
+		for (int y = 0; y < _size.y; y++)
 		{
-			for (int x = 0 ; x < _cellSizeX; x++)
+			for (int x = 0 ; x < _size.x; x++)
 			{
 				p_array[y, x] = _cells[_index][x, y];
 			}
@@ -146,9 +148,9 @@ public class CellSprite : MonoBehaviour
 		{
 			string s = "";
 
-			for (int y = 0; y < _spriteSheet.height; y++)
+			for (int y = 0; y < _size.y; y++)
 			{
-				for (int x = 0 ; x < _cellSizeX; x++)
+				for (int x = 0 ; x < _size.x; x++)
 				{
 					if (cell[x, y].color.a == 0)
 						s += "o";

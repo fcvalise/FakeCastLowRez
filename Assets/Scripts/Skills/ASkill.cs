@@ -12,14 +12,17 @@ public abstract class ASkill : MonoBehaviour
 		Cooldown
 	}
 
-	Player _owner;
-	float _castDuration = 0.0f;
-	float _cooldownDuration = 0.0f;
-	float _castTimer = 0.0f;
-	float _cooldown = 0.0f;
-	SkillState _state;
+	protected Player	_owner;
+	private float		_castDuration = 0.0f;
+	private float		_cooldownDuration = 0.0f;
+	private float		_castTimer = 0.0f;
+	private float		_cooldown = 0.0f;
+	private SkillState	_state;
 
-	string _key;
+	private KeyCode		_key;
+
+	private ColorHSV	_guiColor = new ColorHSV(219f / 360f, 1f, 1f);
+	private GUIStyle	_guiStyle = new GUIStyle();
 
 	void Awake()
 	{
@@ -27,7 +30,7 @@ public abstract class ASkill : MonoBehaviour
 		_owner = GetComponent<Player>();
 	}
 
-	protected void Init(float p_castDuration, float p_cooldownDuration, string key)
+	protected void Init(float p_castDuration, float p_cooldownDuration, KeyCode key)
 	{
 		_castDuration = p_castDuration;
 		_cooldownDuration = p_cooldownDuration;
@@ -63,7 +66,7 @@ public abstract class ASkill : MonoBehaviour
 				Cast(_owner);
 				_cooldown = _cooldownDuration;
 				_state = SkillState.Cooldown;
-				_owner.SetState(Player.PlayerState.None);
+				_owner.SetState(Player.PlayerState.Shoot);
 			}
 			break;
 
@@ -82,9 +85,29 @@ public abstract class ASkill : MonoBehaviour
 
 	void OnGUI()
 	{
-		GUI.Label(new Rect(10, 10, 500, 20), "Skill : ");
-		GUI.Label(new Rect(10, 150, 500, 20), "Remaining cooldown " + _cooldown.ToString());
-		GUI.Label(new Rect(10, 170, 500, 20), "Casting Time " + _castTimer.ToString() + "/" + _castDuration.ToString());
+		_guiStyle.fontSize = 2;
+		string str = "";
+		if (_state == SkillState.Casting)
+		{
+			float coef = _castTimer / _castDuration;
+			int progress = (int)((1 - coef) * Core._width);
+
+			_guiColor.s = coef;
+			_guiColor.a = 1 - coef;
+			_guiStyle.normal.textColor = _guiColor.ToColor();
+
+			for (int i = 0; i < progress; i++)
+				str += "█";
+		}
+		else if (_state == SkillState.Cooldown)
+		{
+			_guiStyle.normal.textColor = Color.white;
+
+			int progress = (int)((_cooldown / _cooldownDuration) * Core._width);
+			for (int i = 0; i < progress; i++)
+				str += "█";
+		}
+		GUI.Label(new Rect(0, 0, 64, 64), str, _guiStyle);
 	}
 
 	public abstract void Cast(Player p_owner);

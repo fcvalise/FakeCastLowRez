@@ -5,16 +5,18 @@ public class MainGrid : ACellObject
 	public CellularAutomaton	_automaton;
 	public Cell[,]				_staticGrid;
 
-	private Ruleset				_ruleset = Ruleset.coral;
-	private float				_startNoise = 0.25f;
+	private Ruleset				_ruleset = Ruleset.anneal;
+	private float				_startNoise = 0.05f;
 	private bool				_aliveBorders = false;
+	private Texture2D			_map;
 
 	public override void Setup()
 	{
-		//_texture = (Texture2D)Resources.Load("Textures/test_map_cpu");
+		_map = (Texture2D)Resources.Load("Textures/map_empty");
 		_automaton = new CellularAutomaton(Core._width, Core._height, _ruleset, _startNoise, _aliveBorders);
 		_staticGrid = new Cell[Core._width, Core._height];
-		FillOneRuleset(Ruleset.life);
+		//FillOneRuleset(Ruleset.life);
+		FillFromTexture(Ruleset.anneal);
 	}
 
 	public override void Simulate()
@@ -46,8 +48,9 @@ public class MainGrid : ACellObject
 	private void SetRuleset(Ruleset p_ruleset)
 	{
 		_ruleset = p_ruleset;
-		_automaton.SetRuleset(_ruleset);
-		FillOneRuleset(_ruleset);
+		//_automaton.SetRuleset(_ruleset);
+		//FillOneRuleset(_ruleset);
+		FillFromTexture(p_ruleset);
 	}
 
 	private void FillOneRuleset(Ruleset p_ruleset)
@@ -57,39 +60,35 @@ public class MainGrid : ACellObject
 			for (int x = Core._height - 1; x >= 0; x--)
 			{
 				_automaton._cells[x, y].rulset = p_ruleset;
-				_automaton._cells[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
+				_automaton._cells[x, y].color = new ColorHSV(219f / 360f, 1f, 1f);
 				_automaton._cells[x, y].state = Cell.State.Dead;
 				_automaton._copy[x, y].rulset = p_ruleset;
-				_automaton._copy[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
+				_automaton._copy[x, y].color = new ColorHSV(219f / 360f, 1f, 1f);
 				_automaton._copy[x, y].state = Cell.State.Dead;
 			}
 		}
 	}
-
-	/*
-	 * Do not remove
-	 * 
-	private void FillFromTexture()
+		
+	private void FillFromTexture(Ruleset rulset)
 	{
-		for (int y = _texture.height - 1; y >= 0; y--)
+		for (int y = _map.height - 1; y >= 0; y--)
 		{
-			for (int x = _texture.width - 1; x >= 0; x--)
+			for (int x = _map.width - 1; x >= 0; x--)
 			{
-				if (_texture.GetPixel(x, y).a != 0)
+				if (_map.GetPixel(x, y).a != 0)
 				{
-					_automaton._cells[x, y].rulset = Ruleset.life;
-					_automaton._cells[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
+					_automaton._cells[x, y].rulset = Ruleset.death;
 
-					_automaton._copy[x, y].rulset = Ruleset.life;
-					_automaton._copy[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
+					_automaton._copy[x, y].rulset = Ruleset.death;
 				}
 				else
 				{
-					_automaton._cells[x, y].color = new ColorHSV(58f / 360f, 1f, 1f);
-					_automaton._copy[x, y].color = new ColorHSV(58f / 360f, 1f, 1f);
+					_automaton._cells[x, y].rulset = rulset;
+					_automaton._copy[x, y].rulset = rulset;
 				}
+				_automaton._cells[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
+				_automaton._copy[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
 			}
 		}
 	}
-	*/
 }

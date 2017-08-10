@@ -5,11 +5,11 @@ using ProceduralToolkit;
 
 public class Silence : ASkill
 {
-	public float _duration;
+	public float	_duration;
 
 	void Start ()
 	{
-		base.Init(1.0f, 5.0f, "space");
+		base.Init(1.0f, 5.0f, _owner._silence);
 	}
 
 	public override void Cast(Player p_owner)

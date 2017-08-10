@@ -7,7 +7,7 @@ public struct Ruleset
 {
 	#region Common rulesets
 
-	public static Ruleset death { get { return new Ruleset("", "012345678"); } }
+	public static Ruleset death { get { return new Ruleset("", ""); } }
 	public static Ruleset life { get { return new Ruleset("3", "23"); } }
 	public static Ruleset highlife { get { return new Ruleset("36", "23"); } }
 	public static Ruleset lifeWithoutDeath { get { return new Ruleset("3", "012345678"); } }

@@ -5,50 +5,69 @@ using UnityEngine;
 public class Bullet : ACellObject
 {
 	public int					_speed;
-	public GameObject			_target;
 	public CellSprite			_sprite;
 
+	private GameObject			_target;
 	private Cell[,]				_cells;
-	private SpriteManager		_cellSprite;
-	private Vector2				_size;
+	private Vector2				_movement;
 
 	public override void Setup()
 	{
 		_sprite.Create();
-		//TODO : To get from SpriteManager
-		_size = new Vector2(10, 10);
-		_cells = new Cell[(int)_size.x, (int)_size.y];
+		_cells = new Cell[_sprite._size.x, _sprite._size.y];
+	}
+
+	//TODO : Really not a good way...
+	public void SetSideAndTarget(GameObject target, Vector2 side)
+	{
+		_target = target;
+		_sprite.SetSide(side);
 	}
 
 	public override void Simulate()
 	{
 		UpdatePosition();
-		_sprite.Simulate(_cells);
+		UpdateSprite();
+		//Find a proper way to get collision
+		int accuracy = 3; // For accuracy = 1 the position need to be exactly the same
+		if ((int)(transform.position.x / accuracy) == (int)(_target.transform.position.x / accuracy) &&
+			(int)(transform.position.y / accuracy) == (int)(_target.transform.position.y / accuracy))
+			Destroy(this);
 	}
 
 	private void UpdatePosition()
 	{
 		Vector2 position = transform.position;
 		Vector2 targetPosition = _target.transform.position;
-		Vector2 direction = (targetPosition - position).normalized;
-		position += direction * _speed;
+		_movement = (targetPosition - position).normalized;
+		position += _movement * _speed;
+		position.x = Mathf.Clamp(position.x, 1, Core._width - _sprite._size.x);
+		position.y = Mathf.Clamp(position.y, 1, Core._height - _sprite._size.y);
 		transform.position = position;
+	}
+
+	private void UpdateSprite()
+	{
+		_sprite.SetSide(_movement);
+		_sprite.Simulate(_cells);
 	}
 
 	public override void Add(Cell[,] p_automaton, Cell[,] p_staticGrid)
 	{
 		Vector2Int position = new Vector2Int((int)transform.position.x, (int)transform.position.y);
 
-		for (int x = 0; x < _size.x; x++)
+		for (int x = 0; x < _sprite._size.x; x++)
 		{
-			for (int y = 0; y < _size.y; y++)
+			for (int y = 0; y < _sprite._size.y; y++)
 			{
-				if (x + position.x < Core._width && y + position.y < Core._height)
-				{
-					p_staticGrid[x + position.x, y + position.y].value = _cells[x, y].value;
-					p_staticGrid[x + position.x, y + position.y].state = _cells[x, y].state;
-					p_staticGrid[x + position.x, y + position.y].color = _cells[x, y].color;
-				}
+				/*
+				p_staticGrid[x + position.x, y + position.y].value = _cells[x, y].value;
+				p_staticGrid[x + position.x, y + position.y].state = _cells[x, y].state;
+				p_staticGrid[x + position.x, y + position.y].color = _cells[x, y].color;
+				*/
+				//TODO : Rework, the SpriteCell should take car of that
+				if (_sprite._printOnAutomaton && _cells[x, y].state == Cell.State.Alive)
+					p_automaton[x + position.x, y + position.y].state = _cells[x, y].state;
 			}
 		}
 	}
