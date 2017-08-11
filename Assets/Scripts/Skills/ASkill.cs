@@ -55,14 +55,17 @@ public abstract class ASkill : MonoBehaviour
 		case SkillState.Casting:
 			_castTimer -= Time.deltaTime;
 
+			_owner.SetCastingPercent(1.0f - (_castTimer / _castDuration));
 			if (_owner.IsSilence)
 			{
 				_cooldown = _cooldownDuration;
 				_state = SkillState.Cooldown;
 				_owner.SetState(Player.PlayerState.None);
+				_owner.SetCastingPercent(0.0f);
 			}
 			else if (_castTimer <= 0.0f)
 			{
+				_owner.SetCastingPercent(0.0f);
 				Cast(_owner);
 				_cooldown = _cooldownDuration;
 				_state = SkillState.Cooldown;

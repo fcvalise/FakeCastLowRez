@@ -13,6 +13,8 @@ public class Player : ACellObject
 	}
 
 	public GameObject			_target;
+	public GameObject			_lifeBar;
+	public GameObject			_castBar;
 
 	public KeyCode				_up;
 	public KeyCode				_down;
@@ -24,6 +26,7 @@ public class Player : ACellObject
 	private Cell[,]				_cells;
 	private SpriteManager		_spriteManager;
 	private Vector2				_size;
+	private int					_lifeMax = 64;
 	private int					_life = 64;
 	private GUIStyle			_guiStyle = new GUIStyle();
 
@@ -49,6 +52,7 @@ public class Player : ACellObject
 		UpdatePosition();
 		UpdateSpriteManager();
 		_lastMovement = _movement;
+		_lifeBar.GetComponent<UnityEngine.UI.Image>().fillAmount = ((float)(_life + 8 - (_life % 8)) / (float)_lifeMax);
 	}
 
 	private void Update()
@@ -196,6 +200,13 @@ public class Player : ACellObject
 	public GameObject GetTarget()
 	{
 		return _target; //TODO get the other player
+	}
+
+	public void SetCastingPercent(float p_percent)
+	{
+		float max = _castBar.GetComponent<RectTransform>().sizeDelta.x + 8;
+		int percent = (int)(p_percent * max);
+		_castBar.GetComponent<UnityEngine.UI.Image>().fillAmount = ((float)(percent - 8 - (percent % 8)) / max);
 	}
 
 	void OnGUI()
