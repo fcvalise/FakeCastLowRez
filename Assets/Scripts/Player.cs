@@ -13,10 +13,8 @@ public class Player : ACellObject
 	}
 
 	public GameObject			_target;
-	public GameObject			_lifeBar;
-	public GameObject			_castBar;
-	public GameObject			_cooldown;
-	public Sprite[]				_sprites;
+	public ProgressBar			_lifeBar;
+	public ProgressBar			_castBar;
 
 	public KeyCode				_up;
 	public KeyCode				_down;
@@ -54,8 +52,7 @@ public class Player : ACellObject
 		UpdatePosition();
 		UpdateSpriteManager();
 		_lastMovement = _movement;
-		_lifeBar.GetComponent<UnityEngine.UI.Image>().fillAmount = ((float)(_life + 8 - (_life % 8)) / (float)_lifeMax);
-		_cooldown.GetComponent<UnityEngine.UI.Image>().sprite = _sprites[7];
+		_lifeBar._percent = (float)(_life) / (float)_lifeMax;
 	}
 
 	private void Update()
@@ -212,9 +209,7 @@ public class Player : ACellObject
 
 	public void SetCastingPercent(float p_percent)
 	{
-		float max = _castBar.GetComponent<RectTransform>().sizeDelta.x + 8;
-		int percent = (int)(p_percent * max);
-		_castBar.GetComponent<UnityEngine.UI.Image>().fillAmount = ((float)(percent - 8 - (percent % 8)) / max);
+		_castBar._percent = p_percent;
 	}
 
 	void OnGUI()

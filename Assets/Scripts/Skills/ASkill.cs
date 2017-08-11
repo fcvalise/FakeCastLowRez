@@ -12,6 +12,7 @@ public abstract class ASkill : MonoBehaviour
 		Cooldown
 	}
 
+	public Buff			_ui;
 	protected Player	_owner;
 	private float		_castDuration = 0.0f;
 	private float		_cooldownDuration = 0.0f;
@@ -41,6 +42,8 @@ public abstract class ASkill : MonoBehaviour
 	// Add input in player
 	void Update()
 	{
+		if (_ui != null)
+			_ui._number = (int)Mathf.Ceil(_cooldown);
 		switch (_state)
 		{
 		case SkillState.Waiting:

@@ -14,7 +14,7 @@ public class CellSprite : MonoBehaviour
 	private List<Cell[,]>			_cells;
 	private	int						_spriteCount;
 	private Vector2					_side = Vector2.down;
-	private int						_index = 0;
+	public int						_index = 0;
 
 	public void Create()
 	{
