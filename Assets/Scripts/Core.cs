@@ -39,10 +39,10 @@ public class Core : MonoBehaviour
 
 	private void Update()
 	{
-		Bullet[] bullets = FindObjectsOfType(typeof(Bullet)) as Bullet[];
 		_deltaSpeed += Time.deltaTime;
 		if (_deltaSpeed > 1f / _speed)
 		{
+			Bullet[] bullets = FindObjectsOfType(typeof(Bullet)) as Bullet[];
 			_deltaSpeed = 0f;
 			_player1.Simulate();
 			_player2.Simulate();

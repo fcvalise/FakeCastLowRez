@@ -56,7 +56,7 @@ public abstract class ASkill : MonoBehaviour
 			_castTimer -= Time.deltaTime;
 
 			_owner.SetCastingPercent(1.0f - (_castTimer / _castDuration));
-			if (_owner.IsSilence)
+			if (_owner.IsSilence || _owner.IsMoving())
 			{
 				_cooldown = _cooldownDuration;
 				_state = SkillState.Cooldown;

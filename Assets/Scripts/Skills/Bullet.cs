@@ -32,7 +32,7 @@ public class Bullet : ACellObject
 		int accuracy = 3; // For accuracy = 1 the position need to be exactly the same
 		if ((int)(transform.position.x / accuracy) == (int)(_target.transform.position.x / accuracy) &&
 			(int)(transform.position.y / accuracy) == (int)(_target.transform.position.y / accuracy))
-			Destroy(this);
+			Destroy(gameObject);
 	}
 
 	private void UpdatePosition()

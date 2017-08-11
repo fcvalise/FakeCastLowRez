@@ -15,6 +15,8 @@ public class Player : ACellObject
 	public GameObject			_target;
 	public GameObject			_lifeBar;
 	public GameObject			_castBar;
+	public GameObject			_cooldown;
+	public Sprite[]				_sprites;
 
 	public KeyCode				_up;
 	public KeyCode				_down;
@@ -53,6 +55,7 @@ public class Player : ACellObject
 		UpdateSpriteManager();
 		_lastMovement = _movement;
 		_lifeBar.GetComponent<UnityEngine.UI.Image>().fillAmount = ((float)(_life + 8 - (_life % 8)) / (float)_lifeMax);
+		_cooldown.GetComponent<UnityEngine.UI.Image>().sprite = _sprites[7];
 	}
 
 	private void Update()
@@ -195,6 +198,11 @@ public class Player : ACellObject
 	{
 		get { return _isSilence; }
 		set { _isSilence = value; }
+	}
+
+	public bool IsMoving()
+	{
+		return _movement != Vector2.zero;
 	}
 
 	public GameObject GetTarget()
