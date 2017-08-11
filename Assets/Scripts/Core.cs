@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class Core : MonoBehaviour
 {
+	public ACellObject[] _ui;
 	public const int	_width = 64;
 	public const int	_height = 64;
 
@@ -35,24 +36,31 @@ public class Core : MonoBehaviour
 		_mainGrid.Setup();
 		_player1.Setup();
 		_player2.Setup();
+
+		foreach (ACellObject obj in _ui)
+			obj.Setup();
 	}
 
 	private void Update()
 	{
-		Bullet[] bullets = FindObjectsOfType(typeof(Bullet)) as Bullet[];
 		_deltaSpeed += Time.deltaTime;
 		if (_deltaSpeed > 1f / _speed)
 		{
+			Bullet[] bullets = FindObjectsOfType(typeof(Bullet)) as Bullet[];
 			_deltaSpeed = 0f;
 			_player1.Simulate();
 			_player2.Simulate();
 			foreach (Bullet bullet in bullets)
 				bullet.Simulate();
+			foreach (ACellObject obj in _ui)
+				obj.Simulate();
 			_mainGrid.Simulate();
 			_player1.Add(_mainGrid._automaton._cells, _mainGrid._staticGrid);
 			_player2.Add(_mainGrid._automaton._cells, _mainGrid._staticGrid);
 			foreach (Bullet bullet in bullets)
 				bullet.Add(_mainGrid._automaton._cells, _mainGrid._staticGrid);
+			foreach (ACellObject obj in _ui)
+				obj.Add(_mainGrid._automaton._cells, _mainGrid._staticGrid);
 			Draw();
 		}
 	}

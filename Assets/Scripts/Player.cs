@@ -13,6 +13,8 @@ public class Player : ACellObject
 	}
 
 	public GameObject			_target;
+	public ProgressBar			_lifeBar;
+	public ProgressBar			_castBar;
 
 	public KeyCode				_up;
 	public KeyCode				_down;
@@ -24,6 +26,7 @@ public class Player : ACellObject
 	private Cell[,]				_cells;
 	private SpriteManager		_spriteManager;
 	private Vector2				_size;
+	private int					_lifeMax = 64;
 	private int					_life = 64;
 	private GUIStyle			_guiStyle = new GUIStyle();
 
@@ -49,6 +52,7 @@ public class Player : ACellObject
 		UpdatePosition();
 		UpdateSpriteManager();
 		_lastMovement = _movement;
+		_lifeBar._percent = (float)(_life) / (float)_lifeMax;
 	}
 
 	private void Update()
@@ -193,9 +197,19 @@ public class Player : ACellObject
 		set { _isSilence = value; }
 	}
 
+	public bool IsMoving()
+	{
+		return _movement != Vector2.zero;
+	}
+
 	public GameObject GetTarget()
 	{
 		return _target; //TODO get the other player
+	}
+
+	public void SetCastingPercent(float p_percent)
+	{
+		_castBar._percent = p_percent;
 	}
 
 	void OnGUI()
