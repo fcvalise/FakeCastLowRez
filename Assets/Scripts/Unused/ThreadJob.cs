@@ -4,39 +4,39 @@ using UnityEngine;
 
 public class ThreadedJob
 {
-	private bool					m_IsDone = false;
-	private object					m_Handle = new object();
-	private System.Threading.Thread	m_Thread = null;
+	private bool					_IsDone = false;
+	private object					_Handle = new object();
+	private System.Threading.Thread	_Thread = null;
 
 	public bool	IsDone
 	{
 		get
 		{
 			bool tmp;
-			lock (m_Handle)
+			lock (_Handle)
 			{
-				tmp = m_IsDone;
+				tmp = _IsDone;
 			}
 			return tmp;
 		}
 		set
 		{
-			lock (m_Handle)
+			lock (_Handle)
 			{
-				m_IsDone = value;
+				_IsDone = value;
 			}
 		}
 	}
 
 	public virtual void Start()
 	{
-		m_Thread = new System.Threading.Thread(Run);
-		m_Thread.Start();
+		_Thread = new System.Threading.Thread(Run);
+		_Thread.Start();
 	}
 
 	public virtual void Abort()
 	{
-		m_Thread.Abort();
+		_Thread.Abort();
 	}
 
 	protected virtual void ThreadFunction() { }

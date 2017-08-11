@@ -2,162 +2,164 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
-namespace ProceduralToolkit
+public class CellSprite : MonoBehaviour
 {
-	public class CellSprite
+	public Texture2D				_spriteSheet;
+	public int						_numberOfSprites;
+	public bool						_isLoop;
+	public bool						_printOnAutomaton;
+
+	[HideInInspector]
+	public Vector2Int				_size;
+	private List<Cell[,]>			_cells;
+	private	int						_spriteCount;
+	private Vector2					_side = Vector2.down;
+	private int						_index = 0;
+
+	public void Create()
 	{
-		private List<CellularCell[,]>	m_cells;
-		private	Texture2D				m_spriteSheet;
-		private int						m_cellSizeX;
-		private int						m_numberOfSprites;
-		private	int						m_spriteCount;
+		_cells = new List<Cell[,]>();
+		_size = new Vector2Int(_spriteSheet.width / _numberOfSprites, _spriteSheet.height);
+		if (_size.x != _size.y)
+			Debug.LogError("ERROR : CellSprite \"" + _spriteSheet.name + "\" width different of height not supported yet");
+		FillCells();
+	}
 
-		private Vector2Int				m_side = Vector2Int.down;
-		private int						m_index = 0;
-		private bool					m_isLoop;
-
-		public CellSprite(Texture2D spriteSheet, int numberOfSprites, bool isLoop)
+	private void FillCells()
+	{
+		int i = 0;
+		for (int x = 0 ; x < _spriteSheet.width; x++)
 		{
-			m_spriteSheet = spriteSheet;
-			m_numberOfSprites = numberOfSprites;
-			m_cells = new List<CellularCell[,]>();
-			m_cellSizeX = m_spriteSheet.width / numberOfSprites;
-			m_isLoop = isLoop;
-
-			int i = 0;
-			for (int x = 0 ; x < m_spriteSheet.width; x++)
+			if (x % _size.x == 0)
 			{
-				if (x % m_cellSizeX == 0)
+				_cells.Add(new Cell[_size.x, _size.y]);
+				i = x / _size.x;
+			}
+
+			for (int y = 0; y < _size.y; y++)
+			{
+				Color color = _spriteSheet.GetPixel(x, _size.y - y - 1);
+				//TODO : Add possibility to fill in a different way
+				FillOneCell(ref _cells[i][x - i * _size.x, y], color);
+			}
+		}
+	}
+
+	private void FillOneCell(ref Cell p_cell, Color p_color)
+	{
+		if (p_color.a != 0)
+		{
+			p_cell.color = new ColorHSV(p_color);
+			p_cell.state = Cell.State.Alive;
+			p_cell.value = 1f;
+		}
+		else
+		{
+			p_cell.state = Cell.State.Dead;
+		}
+	}
+
+	public void Simulate(Cell[,] p_cells)
+	{
+		PrintToCells(p_cells);
+		if (_index < _numberOfSprites - 1)
+			_index++;
+		else if (_isLoop)
+			_index = 0;
+	}
+
+	public void Play()
+	{
+		_index = 0;
+	}
+
+	public bool isFinished()
+	{
+		return _index == _numberOfSprites - 1;
+	}
+
+	public void SetSide(Vector2 p_side)
+	{
+		if (p_side == Vector2.left || p_side == Vector2.right || p_side == Vector2.up || p_side == Vector2.down)
+			_side = p_side;
+	}
+
+	private void PrintToCells(Cell[,] p_cells)
+	{
+		if (_side == Vector2.left)
+			CopyLeft(p_cells);
+		else if (_side == Vector2.right)
+			CopyRight(p_cells);
+		else if (_side == Vector2.down)
+			CopyDown(p_cells);
+		else if (_side == Vector2.up)
+			CopyUp(p_cells);
+	}
+
+	private void CopyUp(Cell[,] p_array)
+	{
+		for (int y = 0; y < _size.y; y++)
+		{
+			for (int x = 0 ; x < _size.x; x++)
+			{
+				p_array[x, y] = _cells[_index][x, y];
+			}
+		}
+	}
+
+	private void CopyDown(Cell[,] p_array)
+	{
+		for (int y = 0; y < _size.y; y++)
+		{
+			for (int x = 0 ; x < _size.x; x++)
+			{
+				p_array[x, y] = _cells[_index][x, _size.y - 1 - y];
+			}
+		}
+	}
+
+	private void CopyLeft(Cell[,] p_array)
+	{
+		//TODO : Only working with square textures
+		for (int y = 0; y < _size.y; y++)
+		{
+			for (int x = 0 ; x < _size.x; x++)
+			{
+				p_array[y, x] = _cells[_index][x, _size.y - 1 - y];
+			}
+		}
+	}
+
+	private void CopyRight(Cell[,] p_array)
+	{
+		//TODO : Only working with square textures
+		for (int y = 0; y < _size.y; y++)
+		{
+			for (int x = 0 ; x < _size.x; x++)
+			{
+				p_array[y, x] = _cells[_index][x, y];
+			}
+		}
+	}
+		
+	private void DebugCells()
+	{
+		foreach (Cell[,] cell in _cells)
+		{
+			string s = "";
+
+			for (int y = 0; y < _size.y; y++)
+			{
+				for (int x = 0 ; x < _size.x; x++)
 				{
-					m_cells.Add(new CellularCell[m_cellSizeX, m_spriteSheet.height]);
-					i = x / m_cellSizeX;
+					if (cell[x, y].color.a == 0)
+						s += "o";
+					else
+						s += "x";
 				}
-
-				for (int y = 0; y < m_spriteSheet.height; y++)
-				{
-					Color color = m_spriteSheet.GetPixel(x, m_spriteSheet.height - y - 1);
-					//TODO : Add possibility to fill in a different way
-					FillCell(ref m_cells[i][x - i * m_cellSizeX, y], color);
-				}
+				s += "\n";
 			}
+			Debug.Log(s);
 		}
-
-		private void FillCell(ref CellularCell cell, Color color)
-		{
-			if (color.a != 0)
-			{
-				cell.color = new ColorHSV(color);
-				cell.state = CellularCell.State.Alive;
-				cell.value = 1f;
-			}
-			else
-			{
-				cell.state = CellularCell.State.Dead;
-			}
-		}
-
-		public void Play()
-		{
-			m_index = 0;
-		}
-
-		public void SetSide(Vector2Int side)
-		{
-			if (side == Vector2Int.left || side == Vector2Int.right || side == Vector2Int.up || side == Vector2Int.down)
-				m_side = side;
-		}
-
-		public void Simulate(CellularCell[,] cells)
-		{
-			if (m_index < m_numberOfSprites - 1)
-				m_index++;
-			else if (m_isLoop)
-				m_index = 0;
-			PrintToCells(cells);
-		}
-
-		private void PrintToCells(CellularCell[,] cells)
-		{
-			if (m_side == Vector2Int.left)
-				CopyLeft(cells);
-			else if (m_side == Vector2Int.right)
-				CopyRight(cells);
-			else if (m_side == Vector2Int.down)
-				CopyDown(cells);
-			else if (m_side == Vector2Int.up)
-				CopyUp(cells);
-		}
-
-		private void CopyUp(CellularCell[,] array)
-		{
-			for (int y = 0; y < m_spriteSheet.height; y++)
-			{
-				for (int x = 0 ; x < m_cellSizeX; x++)
-				{
-					array[x, y] = m_cells[m_index][x, y];
-				}
-			}
-		}
-
-		private void CopyDown(CellularCell[,] array)
-		{
-			for (int y = 0; y < m_spriteSheet.height; y++)
-			{
-				for (int x = 0 ; x < m_cellSizeX; x++)
-				{
-					array[x, y] = m_cells[m_index][x, m_spriteSheet.height - 1 - y];
-				}
-			}
-		}
-
-		private void CopyLeft(CellularCell[,] array)
-		{
-			//TODO : Only working with square textures
-			for (int y = 0; y < m_spriteSheet.height; y++)
-			{
-				for (int x = 0 ; x < m_cellSizeX; x++)
-				{
-					array[y, x] = m_cells[m_index][x, m_spriteSheet.height - 1 - y];
-				}
-			}
-		}
-
-		private void CopyRight(CellularCell[,] array)
-		{
-			//TODO : Only working with square textures
-			for (int y = 0; y < m_spriteSheet.height; y++)
-			{
-				for (int x = 0 ; x < m_cellSizeX; x++)
-				{
-					array[y, x] = m_cells[m_index][x, y];
-				}
-			}
-		}
-
-		/*
-		 * DEBUG
-		 * 
-		private void DebugCells()
-		{
-			foreach (CellularCell[,] cell in m_cells)
-			{
-				string s = "";
-
-				for (int y = 0; y < m_spriteSheet.height; y++)
-				{
-					for (int x = 0 ; x < m_cellSizeX; x++)
-					{
-						if (cell[x, y].color.a == 0)
-							s += "o";
-						else
-							s += "x";
-					}
-					s += "\n";
-				}
-				Debug.Log(s);
-			}
-		}
-		*/
 	}
 }

@@ -3,67 +3,59 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-namespace ProceduralToolkit
+public class SpriteManager : MonoBehaviour
 {
-	public class SpriteManager : MonoBehaviour
+	public string							_initial;
+	public CellSprite[]						_spritesData;
+
+	//[HideInInspector]
+	//public Vector2Int						_size;
+	private Dictionary<string, CellSprite>	_sprites;
+	private string							_current;
+	private Vector2							_side;
+
+	void Start()
 	{
-		public enum SpriteState
+		_sprites = new Dictionary<string, CellSprite>();
+		foreach (CellSprite sprite in _spritesData)
 		{
-			Idle,
-			Walk,
-			Lay,
-			Cast
+			//TODO : Consider dynamic enum generation
+			_sprites.Add(sprite.name, sprite);
+			_sprites[sprite.name].Create();
 		}
+		PlayNext(_initial);
+		_side = Vector2.down;
+	}
 
-		[System.Serializable]
-		public struct SpriteData
+	public void Simulate(Cell[, ] p_cells)
+	{
+		_sprites[_current].SetSide(_side);
+		_sprites[_current].Simulate(p_cells);
+	}
+
+	public string GetState()
+	{
+		return _current;
+	}
+
+	public void SetSide(Vector2 p_side)
+	{
+		if (p_side != Vector2.zero)
+			_side = p_side;
+	}
+
+	public void PlayNext(string p_spriteState)
+	{
+		if (_current != p_spriteState)
 		{
-			public SpriteState	state;
-			public Texture2D	spriteSheet;
-			public int			numberOfSprites;
-			public bool			isLoop;
-			[HideInInspector]
-			public CellSprite	cellSprite;
+			_current = p_spriteState;
+			_sprites[_current].Play();
+			//_size = _sprites[_current]._size;
 		}
+	}
 
-		public SpriteData[]		m_spritesData;
-
-		private Dictionary<SpriteState, CellSprite> m_sprites;
-		private SpriteState		m_current = SpriteState.Walk;
-		private SpriteState		m_next = SpriteState.Walk;
-		private Vector2Int		m_side = Vector2Int.down;
-
-		void Start()
-		{
-			m_sprites = new Dictionary<SpriteState, CellSprite>();
-			//for (int i = 0; i < m_spritesData.Length; i++)
-			foreach (SpriteData data in m_spritesData)
-			{
-				CellSprite cellSprite = new CellSprite(data.spriteSheet, data.numberOfSprites, data.isLoop);
-				m_sprites.Add(data.state, cellSprite);
-			}
-		}
-
-		public void Simulate(CellularCell[, ] cells)
-		{
-			m_sprites[m_current].Simulate(cells);
-			if (m_next != m_current)
-				m_current = m_next;
-			m_sprites[m_current].SetSide(m_side);
-		}
-
-		public void SetSide(Vector2Int side)
-		{
-			m_side = side;
-		}
-
-		public void PlayNext(SpriteState spriteState)
-		{
-			if (m_current != spriteState)
-			{
-				m_sprites[m_next].Play();
-				m_next = spriteState;
-			}
-		}
+	public bool isFinished()
+	{
+		return _sprites[_current].isFinished();
 	}
 }

@@ -1,136 +1,237 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-namespace ProceduralToolkit
+[RequireComponent(typeof(SpriteManager))]
+public class Player : ACellObject
 {
-	[RequireComponent(typeof(SpriteManager))]
-	public class Player : MonoBehaviour, ICellularObject
+	public enum PlayerState
 	{
-		public enum PlayerState {
-			None,
-			CastSkill
-		}
+		None,
+		CastSkill,
+		Shoot
+	}
 
-		private CellularCell[,]		m_cells;
-		public Vector2Int			m_bounds;
+	public GameObject			_target;
 
-		private SpriteManager		m_spriteManager;
+	public KeyCode				_up;
+	public KeyCode				_down;
+	public KeyCode				_right;
+	public KeyCode				_left;
+	public KeyCode				_cast;
+	public KeyCode				_silence;
 
-		private Vector2Int			m_size;
-		private Vector2Int			m_position;
-		private Vector2Int			m_lastMovement;
+	private Cell[,]				_cells;
+	private SpriteManager		_spriteManager;
+	private Vector2				_size;
+	private int					_life = 64;
+	private GUIStyle			_guiStyle = new GUIStyle();
 
-		private bool				m_isSilence = false;
-		private PlayerState			m_state;
+	private Vector2				_movement = Vector2.down;
+	private Vector2				_lastMovement = Vector2.down;
+	[HideInInspector]
+	public Vector2				_side;
 
-		public void Setup()
+	private bool				_isSilence = false;
+	private PlayerState			_state = PlayerState.None;
+
+	public override void Setup()
+	{
+		_spriteManager = GetComponent<SpriteManager>();
+		//TODO : To get from SpriteManager
+		_size = new Vector2(10, 10);
+		transform.position = new Vector2(64 / 2, 64 / 2);
+		_cells = new Cell[(int)_size.x, (int)_size.y];
+	}
+
+	public override void Simulate()
+	{
+		UpdatePosition();
+		UpdateSpriteManager();
+		_lastMovement = _movement;
+	}
+
+	private void Update()
+	{
+		_movement = Vector2.zero;
+
+		if (Input.GetKey(_right) || Input.GetKey(_left) || Input.GetKey(_up) || Input.GetKey(_down))
+			_state = PlayerState.None;
+
+		if (_state == PlayerState.None || _state == PlayerState.Shoot)
 		{
-			m_spriteManager = GetComponent<SpriteManager>();
-			//TODO : To get from SpriteManager
-			m_size = new Vector2Int(10, 10);
-			m_position = new Vector2Int(64 / 2, 64 / 2);
-			m_cells = new CellularCell[m_size.x, m_size.y];
-		}
-
-		private void Fill()
-		{
-			for (int x = 0; x < m_size.x; x++)
-			{
-				for (int y = 0; y < m_size.y; y++)
-				{
-					m_cells[x, y].state = CellularCell.State.Alive;
-					m_cells[x, y].value = 1f;
-					m_cells[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
-				}
-			}
-		}
-
-		public void Simulate()
-		{
-			m_spriteManager.Simulate(m_cells);
-
-			switch (m_state) {
-			case PlayerState.None:
-				UpdatePosition();
-				break;
-
-			case PlayerState.CastSkill:
-				UpdatePosition();
-				break;
-			default:
-				break;
-			}
-		}
-
-		private void UpdatePosition()
-		{
-			Vector2Int movement = Vector2Int.zero;
-
-			if (Input.GetKey(KeyCode.RightArrow))
-				movement += Vector2Int.right;
-			if (Input.GetKey(KeyCode.LeftArrow))
-				movement += Vector2Int.left;
-			if (Input.GetKey(KeyCode.UpArrow))
-				movement += Vector2Int.up;
-			if (Input.GetKey(KeyCode.DownArrow))
-				movement += Vector2Int.down;
-
-			if (movement != Vector2Int.zero)
-			{
-				m_spriteManager.SetSide(movement);
-				m_spriteManager.PlayNext(SpriteManager.SpriteState.Walk);
-			}
-			else if (Input.GetKey(KeyCode.Space))
-				m_spriteManager.PlayNext(SpriteManager.SpriteState.Cast);
-			else
-				m_spriteManager.PlayNext(SpriteManager.SpriteState.Lay);
-
-			if (Mathf.Abs(m_lastMovement.x) == 1 && Mathf.Abs(m_lastMovement.y) == 1)
-				movement = Vector2Int.zero;
-			m_lastMovement = movement;
-
-			m_position += movement;
-			m_position.x = Mathf.Clamp(m_position.x, 1, m_bounds.x - m_size.x);
-			m_position.y = Mathf.Clamp(m_position.y, 1, m_bounds.y - m_size.y);
-		}
-
-		public void Add(CellularCell[,] automaton, CellularCell[,] staticGrid)
-		{
-			for (int x = 0; x < m_size.x; x++)
-			{
-				for (int y = 0; y < m_size.y; y++)
-				{
-					if (x + m_position.x < m_bounds.x && y + m_position.y < m_bounds.y)
-					{
-						staticGrid[x + m_position.x, y + m_position.y].value = m_cells[x, y].value;
-						staticGrid[x + m_position.x, y + m_position.y].state = m_cells[x, y].state;
-						staticGrid[x + m_position.x, y + m_position.y].color = m_cells[x, y].color;
-
-						if (m_cells[x, y].state == CellularCell.State.Alive)
-							automaton[x + m_position.x, y + m_position.y].state = m_cells[x, y].state;
-					}
-				}
-			}
-		}
-
-		public void SetState(Player.PlayerState p_state) {
-			m_state = p_state;
-		}
-
-		public bool CanCastSkill() {
-			return m_state == PlayerState.None && !m_isSilence;
-		}
-
-		public void Silence() {
-			m_isSilence = true;
-		}
-
-		public bool IsSilence() {
-			return m_isSilence;
-		}
-
-		public GameObject GetTarget() {
-			return null; //TODO get the other player
+			if (Input.GetKey(_right))
+				_movement += Vector2.right;
+			if (Input.GetKey(_left))
+				_movement += Vector2.left;
+			if (Input.GetKey(_up))
+				_movement += Vector2.up;
+			if (Input.GetKey(_down))
+				_movement += Vector2.down;
 		}
 	}
+
+	private void UpdatePosition()
+	{
+		Vector2 position = transform.position;
+
+		if (Mathf.Abs(_lastMovement.x) == 1 && Mathf.Abs(_lastMovement.y) == 1)
+			_movement = Vector2.zero;
+
+		position += _movement;
+		position.x = Mathf.Clamp(position.x, 1, Core._width - _size.x);
+		position.y = Mathf.Clamp(position.y, 1, Core._height - _size.y);
+
+		transform.position = position;
+	}
+
+	private void UpdateSpriteManager()
+	{
+		SetSpriteSide();
+
+		switch (_state)
+		{
+			case PlayerState.CastSkill:
+			{
+				if (_spriteManager.GetState() != "player_cast_incant")
+					_spriteManager.PlayNext("player_cast_start");
+				if (_spriteManager.isFinished())
+					_spriteManager.PlayNext("player_cast_incant");
+				break;
+			}
+			case PlayerState.Shoot:
+			{
+				_spriteManager.PlayNext("player_cast_shoot");
+				if (_spriteManager.isFinished())
+					_state = PlayerState.None;
+				break;
+			}
+			default:
+			{
+				if (_movement != Vector2.zero || _lastMovement != Vector2.zero)
+					_spriteManager.PlayNext("player_walk");
+				else if (_life <= 0)
+					_spriteManager.PlayNext("player_lay");
+				else
+					_spriteManager.PlayNext("player_idle");
+			}
+			break;
+		}
+
+		_spriteManager.Simulate(_cells);
+	}
+
+	private void SetSpriteSide()
+	{
+		//Follow target
+		if (_state == PlayerState.CastSkill)
+		{
+			Vector2 position = transform.position;
+			position = position + _size / 2;
+			Vector2 targetPosition = _target.transform.position;
+			_side = targetPosition - position;
+
+			if (Mathf.Abs(_side.x) > Mathf.Abs(_side.y))
+			{
+				_side.x = Mathf.Clamp(_side.x, -1, 1);
+				_side.y = 0;
+			}
+			else
+			{
+				_side.y = Mathf.Clamp(_side.y, -1, 1);
+				_side.x = 0;
+			}
+		}
+		else
+			_side = _movement;
+
+		_spriteManager.SetSide(_side);
+
+	}
+
+	public override void Add(Cell[,] p_automaton, Cell[,] p_staticGrid)
+	{
+		Vector2Int position = new Vector2Int((int)transform.position.x, (int)transform.position.y);
+		bool isOnAliveCell = false;
+		
+		for (int x = 0; x < _size.x; x++)
+		{
+			for (int y = 0; y < _size.y; y++)
+			{
+				if (x + transform.position.x < Core._width && y + transform.position.y < Core._height)
+				{
+					if (_cells[x, y].state == Cell.State.Alive)
+					{
+						p_staticGrid[x + position.x, y + position.y].value = _cells[x, y].value;
+						p_staticGrid[x + position.x, y + position.y].color = _cells[x, y].color;
+						p_staticGrid[x + position.x, y + position.y].state = _cells[x, y].state;
+					}
+
+					if (_cells[x, y].state == Cell.State.Alive && p_automaton[x + position.x, y + position.y].state == Cell.State.Alive)
+						isOnAliveCell = true;
+					//	p_automaton[x + position.x, y + position.y].state = _cells[x, y].state;
+				}
+			}
+		}
+		if (isOnAliveCell)
+			_life -= 1;
+	}
+
+	public void SetState(Player.PlayerState p_state)
+	{
+		_state = p_state;
+	}
+
+	public bool CanCastSkill()
+	{
+		return _state == PlayerState.None && !_isSilence;
+	}
+
+	public void Silence()
+	{
+		_isSilence = true;
+	}
+
+	public bool IsSilence()
+	{
+		return _isSilence;
+	}
+
+	public GameObject GetTarget()
+	{
+		return _target; //TODO get the other player
+	}
+
+	void OnGUI()
+	{
+		_guiStyle.fontSize = 2;
+		string str = "";
+		_guiStyle.normal.textColor = Color.blue;
+
+		for (int i = 0; i < _life; i++)
+			str += "█";
+
+		GUI.Label(new Rect(0, 63, 64, 64), str, _guiStyle);
+
+		_guiStyle.fontSize = 15;
+		if (_life <= 0 && GUI.Button(new Rect(8, 20, 56, 40), "Replay!", _guiStyle))
+			SceneManager.LoadScene("Game");
+	}
+
+	/*
+	 * Debug
+	 * 
+	private void Fill()
+	{
+		for (int x = 0; x < _size.x; x++)
+		{
+			for (int y = 0; y < _size.y; y++)
+			{
+				_cells[x, y].state = Cell.State.Alive;
+				_cells[x, y].value = 1f;
+				_cells[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
+			}
+		}
+	}
+	*/
 }

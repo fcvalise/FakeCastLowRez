@@ -1,101 +1,94 @@
 ﻿using UnityEngine;
 
-namespace ProceduralToolkit
+public class MainGrid : ACellObject
 {
-	public class MainGrid : ICellularObject
+	public CellularAutomaton	_automaton;
+	public Cell[,]				_staticGrid;
+
+	private Ruleset				_ruleset = Ruleset.anneal;
+	private float				_startNoise = 0.05f;
+	private bool				_aliveBorders = false;
+	private Texture2D			_map;
+
+	public override void Setup()
 	{
-		public CellularAutomaton	m_automaton;
-		public CellularCell[,]		m_staticGrid;
+		_map = (Texture2D)Resources.Load("Textures/map_empty");
+		_automaton = new CellularAutomaton(Core._width, Core._height, _ruleset, _startNoise, _aliveBorders);
+		_staticGrid = new Cell[Core._width, Core._height];
+		//FillOneRuleset(Ruleset.life);
+		FillFromTexture(Ruleset.anneal);
+	}
 
-		private Ruleset				m_ruleset = Ruleset.coral;
-		private float				m_startNoise = 0.25f;
-		private bool				m_aliveBorders = false;
-		private Texture2D			m_texture;
+	public override void Simulate()
+	{
+		UpdateRuleset();
+		_automaton.Simulate();
+	}
 
-		public MainGrid(int width, int height)
+	public override void Add(Cell[,] p_automaton, Cell[,] p_staticGrid) { }
+
+	private void UpdateRuleset()
+	{
+		if (Input.GetKey(KeyCode.Alpha1))
+			SetRuleset(Ruleset.anneal);
+		if (Input.GetKey(KeyCode.Alpha2))
+			SetRuleset(Ruleset.coagulations);
+		if (Input.GetKey(KeyCode.Alpha3))
+			SetRuleset(Ruleset.coral);
+		if (Input.GetKey(KeyCode.Alpha4))
+			SetRuleset(Ruleset.life);
+		if (Input.GetKey(KeyCode.Alpha5))
+			SetRuleset(Ruleset.majority);
+		if (Input.GetKey(KeyCode.Alpha6))
+			SetRuleset(Ruleset.mazectric);
+		if (Input.GetKey(KeyCode.Alpha7))
+			SetRuleset(Ruleset.walledCities);
+	}
+
+	private void SetRuleset(Ruleset p_ruleset)
+	{
+		_ruleset = p_ruleset;
+		//_automaton.SetRuleset(_ruleset);
+		//FillOneRuleset(_ruleset);
+		FillFromTexture(p_ruleset);
+	}
+
+	private void FillOneRuleset(Ruleset p_ruleset)
+	{
+		for (int y = Core._width - 1; y >= 0; y--)
 		{
-			m_texture = (Texture2D)Resources.Load("Sprites/test_map_cpu");
-			m_automaton = new CellularAutomaton(m_texture.width, m_texture.height, m_ruleset, m_startNoise, m_aliveBorders);
-			m_staticGrid = new CellularCell[m_texture.width, m_texture.height];
-		}
-
-		public void Setup()
-		{
-			FillOneRuleset(Ruleset.life);
-		}
-
-		public void Simulate()
-		{
-			UpdateRuleset();
-			m_automaton.Simulate();
-		}
-
-		public void Add(CellularCell[,] automaton, CellularCell[,] staticGrid) { }
-
-		private void UpdateRuleset()
-		{
-			if (Input.GetKey(KeyCode.Alpha1))
-				SetRuleset(Ruleset.anneal);
-			if (Input.GetKey(KeyCode.Alpha2))
-				SetRuleset(Ruleset.coagulations);
-			if (Input.GetKey(KeyCode.Alpha3))
-				SetRuleset(Ruleset.coral);
-			if (Input.GetKey(KeyCode.Alpha4))
-				SetRuleset(Ruleset.life);
-			if (Input.GetKey(KeyCode.Alpha5))
-				SetRuleset(Ruleset.majority);
-			if (Input.GetKey(KeyCode.Alpha6))
-				SetRuleset(Ruleset.mazectric);
-			if (Input.GetKey(KeyCode.Alpha7))
-				SetRuleset(Ruleset.walledCities);
-		}
-
-		private void SetRuleset(Ruleset ruleset)
-		{
-			m_ruleset = ruleset;
-			m_automaton.SetRuleset(ruleset);
-			FillOneRuleset(ruleset);
-			Debug.Log(ruleset.ToString());
-		}
-
-		private void FillOneRuleset(Ruleset ruleset)
-		{
-			for (int y = m_texture.height - 1; y >= 0; y--)
+			for (int x = Core._height - 1; x >= 0; x--)
 			{
-				for (int x = m_texture.width - 1; x >= 0; x--)
-				{
-					m_automaton.m_cells[x, y].rulset = ruleset;
-					m_automaton.m_cells[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
-					m_automaton.m_cells[x, y].state = CellularCell.State.Dead;
-				}
+				_automaton._cells[x, y].rulset = p_ruleset;
+				_automaton._cells[x, y].color = new ColorHSV(219f / 360f, 1f, 1f);
+				_automaton._cells[x, y].state = Cell.State.Dead;
+				_automaton._copy[x, y].rulset = p_ruleset;
+				_automaton._copy[x, y].color = new ColorHSV(219f / 360f, 1f, 1f);
+				_automaton._copy[x, y].state = Cell.State.Dead;
 			}
 		}
-
-		/*
-		 * Not to remove
-		 * 
-		private void FillFromTexture()
+	}
+		
+	private void FillFromTexture(Ruleset rulset)
+	{
+		for (int y = _map.height - 1; y >= 0; y--)
 		{
-			for (int y = m_texture.height - 1; y >= 0; y--)
+			for (int x = _map.width - 1; x >= 0; x--)
 			{
-				for (int x = m_texture.width - 1; x >= 0; x--)
+				if (_map.GetPixel(x, y).a != 0)
 				{
-					if (m_texture.GetPixel(x, y).a != 0)
-					{
-						m_automaton.m_cells[x, y].rulset = Ruleset.life;
-						m_automaton.m_cells[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
+					_automaton._cells[x, y].rulset = Ruleset.death;
 
-						m_automaton.m_copy[x, y].rulset = Ruleset.life;
-						m_automaton.m_copy[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
-					}
-					else
-					{
-						m_automaton.m_cells[x, y].color = new ColorHSV(58f / 360f, 1f, 1f);
-						m_automaton.m_copy[x, y].color = new ColorHSV(58f / 360f, 1f, 1f);
-					}
+					_automaton._copy[x, y].rulset = Ruleset.death;
 				}
+				else
+				{
+					_automaton._cells[x, y].rulset = rulset;
+					_automaton._copy[x, y].rulset = rulset;
+				}
+				_automaton._cells[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
+				_automaton._copy[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
 			}
 		}
-		*/
 	}
 }

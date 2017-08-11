@@ -9,8 +9,8 @@ namespace ProceduralToolkit
 
 	public class CellularAutomatonThread : ThreadedJob
 	{
-		public CellularCell[,]				cells;
-		public CellularCell[,]				copy;
+		public Cell[,]				cells;
+		public Cell[,]				copy;
 
 		public Vector2Int					size;
 		private bool						aliveBorders;
@@ -24,14 +24,14 @@ namespace ProceduralToolkit
 			this.size.x = width;
 			this.size.y = height;
 			this.aliveBorders = aliveBorders;
-			cells = new CellularCell[width, height];
-			copy = new CellularCell[width, height];
+			cells = new Cell[width, height];
+			copy = new Cell[width, height];
 
 			visitAliveBorders = (int neighbourX, int neighbourY) =>
 			{
 				if (copy.IsInBounds(neighbourX, neighbourY))
 				{
-					if (copy[neighbourX, neighbourY].state == CellularCell.State.Alive)
+					if (copy[neighbourX, neighbourY].state == Cell.State.Alive)
 					{
 						aliveNeighbours++;
 					}
@@ -43,7 +43,7 @@ namespace ProceduralToolkit
 			};
 			visitDeadBorders = (int neighbourX, int neighbourY) =>
 			{
-				if (copy[neighbourX, neighbourY].state == CellularCell.State.Alive)
+				if (copy[neighbourX, neighbourY].state == Cell.State.Alive)
 				{
 					aliveNeighbours++;
 				}
@@ -75,7 +75,7 @@ namespace ProceduralToolkit
 			{
 				for (int y = 0; y < size.y; y++)
 				{
-					cells[x, y].state = Random.value < noise ? CellularCell.State.Alive : CellularCell.State.Dead;
+					cells[x, y].state = Random.value < noise ? Cell.State.Alive : Cell.State.Dead;
 				}
 			}
 		}
@@ -119,34 +119,34 @@ namespace ProceduralToolkit
 					ComputeValue(ref cells[x, y]);
 
 					//if (cells[x, y].value >= 10f)
-					//	cells[x, y].state = CellularCell.State.Dead;
+					//	cells[x, y].state = Cell.State.Dead;
 
 					copy[x, y].value = cells[x, y].value;
 				}
 			}
 		}
 
-		private void ComputeState(ref CellularCell cell, ref CellularCell copy, int aliveCells)
+		private void ComputeState(ref Cell cell, ref Cell copy, int aliveCells)
 		{					
-			if (copy.state == CellularCell.State.Dead)
+			if (copy.state == Cell.State.Dead)
 			{
 				if (cell.rulset.CanSpawn(aliveCells))
-					cell.state = CellularCell.State.Alive;
+					cell.state = Cell.State.Alive;
 				else
-					cell.state = CellularCell.State.Dead;
+					cell.state = Cell.State.Dead;
 			}
 			else
 			{
 				if (!cell.rulset.CanSurvive(aliveCells))
-					cell.state = CellularCell.State.Dead;
+					cell.state = Cell.State.Dead;
 				else
-					cell.state = CellularCell.State.Alive;
+					cell.state = Cell.State.Alive;
 			}
 		}
 
-		private void ComputeValue(ref CellularCell cell)
+		private void ComputeValue(ref Cell cell)
 		{
-			if (cell.state == CellularCell.State.Alive)
+			if (cell.state == Cell.State.Alive)
 				cell.value = Mathf.Clamp(cell.value + 0.05f, 0f, 10f);
 			else
 				cell.value = Mathf.Clamp(cell.value - 0.05f, 0f, 1f);
