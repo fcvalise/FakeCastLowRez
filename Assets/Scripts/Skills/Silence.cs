@@ -14,12 +14,13 @@ public class Silence : ASkill
 
 	public override void Cast(Player p_owner)
 	{
-		p_owner.GetTarget().GetComponent<Player>().Silence();
-		StartCoroutine(SilenceCo());
+		p_owner.GetTarget().GetComponent<Player>().IsSilence = true;
+		StartCoroutine(SilenceCo(p_owner));
 	}
 
-	IEnumerator SilenceCo()
+	IEnumerator SilenceCo(Player p_owner)
 	{
 		yield return new WaitForSeconds(_duration);
+		p_owner.GetTarget().GetComponent<Player>().IsSilence = false;
 	}
 }

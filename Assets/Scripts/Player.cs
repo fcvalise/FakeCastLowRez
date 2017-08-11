@@ -187,14 +187,10 @@ public class Player : ACellObject
 		return _state == PlayerState.None && !_isSilence;
 	}
 
-	public void Silence()
+	public bool IsSilence
 	{
-		_isSilence = true;
-	}
-
-	public bool IsSilence()
-	{
-		return _isSilence;
+		get { return _isSilence; }
+		set { _isSilence = value; }
 	}
 
 	public GameObject GetTarget()
