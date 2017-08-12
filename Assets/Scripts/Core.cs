@@ -50,6 +50,17 @@ public class Core : MonoBehaviour
 			_deltaSpeed = 0f;
 			_player1.Simulate();
 			_player2.Simulate();
+			// Manage collision between bullets
+			for (int i = bullets.Length - 1; i >= 0; i--) {
+				for (int j = bullets.Length - 1; j >= 0; j--) {
+					if (bullets[i] != bullets[j]) {
+						if (Vector3.Distance(bullets[i].transform.position, bullets[j].transform.position) < 5.0f) {
+							Destroy(bullets[i].gameObject);
+							Destroy(bullets[j].gameObject);
+						}
+					}
+				}
+			}
 			foreach (Bullet bullet in bullets)
 				bullet.Simulate();
 			foreach (ACellObject obj in _ui)

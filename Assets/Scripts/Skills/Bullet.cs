@@ -26,7 +26,6 @@ public class Bullet : ACellObject
 
 	public override void Simulate()
 	{
-		Debug.Log("simulate");
 		UpdatePosition();
 		UpdateSprite();
 		//Find a proper way to get collision
