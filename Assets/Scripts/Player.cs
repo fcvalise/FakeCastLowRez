@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 [RequireComponent(typeof(SpriteManager))]
 public class Player : ACellObject
@@ -37,9 +38,12 @@ public class Player : ACellObject
 
 	private bool				_isSilence = false;
 	private PlayerState			_state = PlayerState.None;
+	private float				_colorFactor;
+	private ColorHSV			_colorDamage;
 
 	public override void Setup()
 	{
+		_colorDamage = new ColorHSV(new Color(1.0f, 0.0f, 0.0f, 1.0f));
 		_spriteManager = GetComponent<SpriteManager>();
 		//TODO : To get from SpriteManager
 		_size = new Vector2(10, 10);
@@ -167,18 +171,21 @@ public class Player : ACellObject
 					if (_cells[x, y].state == Cell.State.Alive)
 					{
 						p_staticGrid[x + position.x, y + position.y].value = _cells[x, y].value;
-						p_staticGrid[x + position.x, y + position.y].color = _cells[x, y].color;
+						p_staticGrid[x + position.x, y + position.y].color = ColorHSV.Lerp(_cells[x, y].color, _colorDamage, _colorFactor);
 						p_staticGrid[x + position.x, y + position.y].state = _cells[x, y].state;
 					}
 
-					if (_cells[x, y].state == Cell.State.Alive && p_automaton[x + position.x, y + position.y].state == Cell.State.Alive)
+					if (_cells[x, y].state == Cell.State.Alive && p_automaton[x + position.x, y + position.y].state == Cell.State.Alive) {
 						isOnAliveCell = true;
+					}
 					//	p_automaton[x + position.x, y + position.y].state = _cells[x, y].state;
 				}
 			}
 		}
-		if (isOnAliveCell)
+		if (isOnAliveCell) {
 			_life -= 1;
+			StartCoroutine(DamageColorCo());
+		}
 	}
 
 	public void SetState(Player.PlayerState p_state)
@@ -210,6 +217,17 @@ public class Player : ACellObject
 	public void SetCastingPercent(float p_percent)
 	{
 		_castBar._percent = p_percent;
+	}
+
+	private IEnumerator DamageColorCo()
+	{
+		float timerMax = 0.5f;
+		float timer = timerMax;
+		while (timer > 0.0f) {
+			timer -= Time.deltaTime;
+			_colorFactor = Mathf.Clamp(timer / timerMax, 0.0f, 1.0f);
+			yield return new WaitForEndOfFrame();
+		}
 	}
 
 	void OnGUI()
