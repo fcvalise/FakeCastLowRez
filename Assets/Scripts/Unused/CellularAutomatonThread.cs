@@ -2,6 +2,7 @@
 using Random = UnityEngine.Random;
 using UnityEngine;
 
+/*
 namespace ProceduralToolkit
 {
 	// J'avait teste de mettre le cellular automaton dans un thread.
@@ -167,3 +168,4 @@ namespace ProceduralToolkit
 		}
 	}
 }
+*/

@@ -85,9 +85,7 @@ public class Core : MonoBehaviour
 				_mainGrid._automaton._cells[x, y].color.s = 1f - _mainGrid._automaton._cells[x, y].value;
 				_mainGrid._automaton._cells[x, y].color.a = Mathf.Clamp(_mainGrid._automaton._cells[x, y].value, 0f, 1f);
 				if (_mainGrid._staticGrid[x, y].state == Cell.State.Alive)
-				{
 					_pixels[y * _width + x] = _mainGrid._staticGrid[x, y].color.ToColor();
-				}
 				else
 					_pixels[y * _width + x] = _mainGrid._automaton._cells[x, y].color.ToColor();
 				_mainGrid._staticGrid[x, y].state = Cell.State.Dead;
