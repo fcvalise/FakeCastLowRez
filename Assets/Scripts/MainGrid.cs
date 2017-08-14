@@ -2,10 +2,10 @@
 
 public class MainGrid : ACellObject
 {
-	public CellularAutomaton	_automaton;
+	public Automaton			_automaton;
 	public Cell[,]				_staticGrid;
 
-	private Ruleset				_ruleset = Ruleset.anneal;
+	private Ruleset				_ruleset = RulesetList.Anneal;
 	private float				_startNoise = 0.05f;
 	private bool				_aliveBorders = false;
 	private Texture2D			_map;
@@ -13,10 +13,10 @@ public class MainGrid : ACellObject
 	public override void Setup()
 	{
 		_map = (Texture2D)Resources.Load("Textures/map_empty");
-		_automaton = new CellularAutomaton(Core._width, Core._height, _ruleset, _startNoise, _aliveBorders);
+		_automaton = new Automaton(Core._width, Core._height, _ruleset, _startNoise, _aliveBorders);
 		_staticGrid = new Cell[Core._width, Core._height];
 		//FillOneRuleset(Ruleset.life);
-		FillFromTexture(Ruleset.anneal);
+		FillFromTexture(RulesetList.Anneal);
 	}
 
 	public override void Simulate()
@@ -30,19 +30,19 @@ public class MainGrid : ACellObject
 	private void UpdateRuleset()
 	{
 		if (Input.GetKey(KeyCode.Alpha1))
-			SetRuleset(Ruleset.anneal);
+			SetRuleset(RulesetList.Anneal);
 		if (Input.GetKey(KeyCode.Alpha2))
-			SetRuleset(Ruleset.coagulations);
+			SetRuleset(RulesetList.Coagulations);
 		if (Input.GetKey(KeyCode.Alpha3))
-			SetRuleset(Ruleset.coral);
+			SetRuleset(RulesetList.Coral);
 		if (Input.GetKey(KeyCode.Alpha4))
-			SetRuleset(Ruleset.life);
+			SetRuleset(RulesetList.Life);
 		if (Input.GetKey(KeyCode.Alpha5))
-			SetRuleset(Ruleset.majority);
+			SetRuleset(RulesetList.Majority);
 		if (Input.GetKey(KeyCode.Alpha6))
-			SetRuleset(Ruleset.mazectric);
+			SetRuleset(RulesetList.Mazectric);
 		if (Input.GetKey(KeyCode.Alpha7))
-			SetRuleset(Ruleset.walledCities);
+			SetRuleset(RulesetList.WalledCities);
 	}
 
 	private void SetRuleset(Ruleset p_ruleset)
@@ -77,9 +77,8 @@ public class MainGrid : ACellObject
 			{
 				if (_map.GetPixel(x, y).a != 0)
 				{
-					_automaton._cells[x, y].rulset = Ruleset.death;
-
-					_automaton._copy[x, y].rulset = Ruleset.death;
+					_automaton._cells[x, y].rulset = RulesetList.Death;
+					_automaton._copy[x, y].rulset = RulesetList.Death;
 				}
 				else
 				{
