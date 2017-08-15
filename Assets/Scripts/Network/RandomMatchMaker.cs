@@ -58,7 +58,7 @@ public class RandomMatchMaker : Photon.PunBehaviour
 		}
 		else
 		{
-			_player = PhotonNetwork.Instantiate("Player2TEOTH", Vector3.zero, Quaternion.identity, 0);
+			_player = PhotonNetwork.Instantiate("PlayerNetwork", Vector3.zero, Quaternion.identity, 0);
 		}
 	}
 }

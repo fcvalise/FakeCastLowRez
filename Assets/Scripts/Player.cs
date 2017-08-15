@@ -31,15 +31,22 @@ public class Player : ACellObject
 	private int					_life = 64;
 	private GUIStyle			_guiStyle = new GUIStyle();
 
-	private Vector2				_movement = Vector2.down;
+	public Vector2				_movement = Vector2.down;
 	private Vector2				_lastMovement = Vector2.down;
 	[HideInInspector]
 	public Vector2				_side;
 
 	private bool				_isSilence = false;
-	private PlayerState			_state = PlayerState.None;
+	public PlayerState			_state = PlayerState.None;
 	private float				_colorFactor;
 	private ColorHSV			_colorDamage;
+
+	public bool					_isMine;
+
+	public void Awake()
+	{
+		Setup();
+	}
 
 	public override void Setup()
 	{
@@ -56,26 +63,29 @@ public class Player : ACellObject
 		UpdatePosition();
 		UpdateSpriteManager();
 		_lastMovement = _movement;
-		_lifeBar._percent = (float)(_life) / (float)_lifeMax;
+//		_lifeBar._percent = (float)(_life) / (float)_lifeMax;
 	}
 
 	private void Update()
 	{
-		_movement = Vector2.zero;
-
-		if (Input.GetKey(_right) || Input.GetKey(_left) || Input.GetKey(_up) || Input.GetKey(_down))
-			_state = PlayerState.None;
-
-		if (_state == PlayerState.None || _state == PlayerState.Shoot)
+		if (_isMine)
 		{
-			if (Input.GetKey(_right))
-				_movement += Vector2.right;
-			if (Input.GetKey(_left))
-				_movement += Vector2.left;
-			if (Input.GetKey(_up))
-				_movement += Vector2.up;
-			if (Input.GetKey(_down))
-				_movement += Vector2.down;
+			_movement = Vector2.zero;
+
+			if (Input.GetKey(_right) || Input.GetKey(_left) || Input.GetKey(_up) || Input.GetKey(_down))
+				_state = PlayerState.None;
+
+			if (_state == PlayerState.None || _state == PlayerState.Shoot)
+			{
+				if (Input.GetKey(_right))
+					_movement += Vector2.right;
+				if (Input.GetKey(_left))
+					_movement += Vector2.left;
+				if (Input.GetKey(_up))
+					_movement += Vector2.up;
+				if (Input.GetKey(_down))
+					_movement += Vector2.down;
+			}
 		}
 	}
 
@@ -136,7 +146,7 @@ public class Player : ACellObject
 		{
 			Vector2 position = transform.position;
 			position = position + _size / 2;
-			Vector2 targetPosition = _target.transform.position;
+			Vector2 targetPosition = GetTarget().transform.position;
 			_side = targetPosition - position;
 
 			if (Mathf.Abs(_side.x) > Mathf.Abs(_side.y))
@@ -211,12 +221,25 @@ public class Player : ACellObject
 
 	public GameObject GetTarget()
 	{
+		if (_target == null)
+		{
+			Player[] players = FindObjectsOfType(typeof(Player)) as Player[];
+			foreach (Player player in players)
+			{
+				if (!player._isMine)
+				{
+					_target = player.gameObject;
+					return _target;
+				}
+			}
+			return gameObject;
+		}
 		return _target; //TODO get the other player
 	}
 
 	public void SetCastingPercent(float p_percent)
 	{
-		_castBar._percent = p_percent;
+		//_castBar._percent = p_percent;
 	}
 
 	private IEnumerator DamageColorCo()
@@ -243,7 +266,7 @@ public class Player : ACellObject
 
 		_guiStyle.fontSize = 15;
 		if (_life <= 0 && GUI.Button(new Rect(8, 20, 56, 40), "Replay!", _guiStyle))
-			SceneManager.LoadScene("Game");
+			_life = _lifeMax;
 	}
 
 	/*

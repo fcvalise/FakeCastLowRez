@@ -43,6 +43,8 @@ public abstract class ASkill : MonoBehaviour
 	{
 		if (_ui != null)
 			_ui._number = (int)Mathf.Ceil(_cooldown);
+		if (_owner._isMine)
+		{
 		switch (_state)
 		{
 		case SkillState.Waiting:
@@ -85,6 +87,7 @@ public abstract class ASkill : MonoBehaviour
 
 		default:
 			break;
+		}
 		}
 	}
 

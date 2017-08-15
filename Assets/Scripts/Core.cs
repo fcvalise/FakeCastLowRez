@@ -12,14 +12,14 @@ public class Core : MonoBehaviour
 	public const int	_height = 64;
 
 	public RawImage		_image;
-	public Player		_player1;
-	public Player		_player2;
 
 	private Color[]		_pixels = new Color[_width * _height];
 	private Texture2D	_texture;
 
 	private float		_speed = 30f;
 	private float		_deltaSpeed = 0f;
+
+	private GameObject	_players;
 
 	private MainGrid	_mainGrid;
 
@@ -34,8 +34,6 @@ public class Core : MonoBehaviour
 
 		_mainGrid = new MainGrid();
 		_mainGrid.Setup();
-		_player1.Setup();
-		_player2.Setup();
 
 		foreach (ACellObject obj in _ui)
 			obj.Setup();
@@ -48,9 +46,11 @@ public class Core : MonoBehaviour
 		{
 			Bullet[] bullets = FindObjectsOfType(typeof(Bullet)) as Bullet[];
 			_deltaSpeed = 0f;
-			_player1.Simulate();
-			_player2.Simulate();
+			Player[] players = FindObjectsOfType(typeof(Player)) as Player[];
+			foreach (Player player in players)
+				player.Simulate();
 			// Manage collision between bullets
+			/*
 			for (int i = bullets.Length - 1; i >= 0; i--) {
 				for (int j = bullets.Length - 1; j >= 0; j--) {
 					if (bullets[i] != bullets[j]) {
@@ -61,13 +61,14 @@ public class Core : MonoBehaviour
 					}
 				}
 			}
+			*/
 			foreach (Bullet bullet in bullets)
 				bullet.Simulate();
 			foreach (ACellObject obj in _ui)
 				obj.Simulate();
 			_mainGrid.Simulate();
-			_player1.Add(_mainGrid._automaton._cells, _mainGrid._staticGrid);
-			_player2.Add(_mainGrid._automaton._cells, _mainGrid._staticGrid);
+			foreach (Player player in players)
+				player.Add(_mainGrid._automaton._cells, _mainGrid._staticGrid);
 			foreach (Bullet bullet in bullets)
 				bullet.Add(_mainGrid._automaton._cells, _mainGrid._staticGrid);
 			foreach (ACellObject obj in _ui)
