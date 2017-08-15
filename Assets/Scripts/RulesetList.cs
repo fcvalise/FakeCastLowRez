@@ -7,16 +7,16 @@ public class RulesetList : MonoBehaviour
 {
 	public static Dictionary<Ruleset.Name, Ruleset>	_rulesets;
 
-	public static Ruleset Life { get { return new Ruleset(_rulesets[Ruleset.Name.Life]); } }
-	public static Ruleset Death { get { return new Ruleset(_rulesets[Ruleset.Name.Death]); } }
-	public static Ruleset Mazectric { get { return new Ruleset(_rulesets[Ruleset.Name.Mazectric]); } }
-	public static Ruleset Coral { get { return new Ruleset(_rulesets[Ruleset.Name.Coral]); } }
-	public static Ruleset Anneal { get { return new Ruleset(_rulesets[Ruleset.Name.Anneal]); } }
-	public static Ruleset Majority { get { return new Ruleset(_rulesets[Ruleset.Name.Majority]); } }
-	public static Ruleset Coagulations { get { return new Ruleset(_rulesets[Ruleset.Name.Coagulations]); } }
-	public static Ruleset WalledCities { get { return new Ruleset(_rulesets[Ruleset.Name.WalledCities]); } }
+	public static Ruleset Life { get { return Get(Ruleset.Name.Life); } }
+	public static Ruleset Death { get { return Get(Ruleset.Name.Death); } }
+	public static Ruleset Mazectric { get { return Get(Ruleset.Name.Mazectric); } }
+	public static Ruleset Coral { get { return Get(Ruleset.Name.Coral); } }
+	public static Ruleset Anneal { get { return Get(Ruleset.Name.Anneal); } }
+	public static Ruleset Majority { get { return Get(Ruleset.Name.Majority); } }
+	public static Ruleset Coagulations { get { return Get(Ruleset.Name.Coagulations); } }
+	public static Ruleset WalledCities { get { return Get(Ruleset.Name.WalledCities); } }
 
-	void Awake ()
+	public static void Setup()
 	{
 		_rulesets = new Dictionary<Ruleset.Name, Ruleset>();
 		_rulesets.Add(Ruleset.Name.Life, new Ruleset(Ruleset.Name.Life, "3", "32"));
@@ -31,6 +31,8 @@ public class RulesetList : MonoBehaviour
 
 	public static Ruleset Get(Ruleset.Name name)
 	{
+		if (_rulesets == null)
+			Setup();
 		return new Ruleset(_rulesets[name]);
 	}
 }

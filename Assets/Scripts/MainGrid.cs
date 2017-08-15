@@ -5,7 +5,7 @@ public class MainGrid : ACellObject
 	public Automaton			_automaton;
 	public Cell[,]				_staticGrid;
 
-	private Ruleset				_ruleset = RulesetList.Anneal;
+	private Ruleset				_ruleset;
 	private float				_startNoise = 0.05f;
 	private bool				_aliveBorders = false;
 	private Texture2D			_map;
