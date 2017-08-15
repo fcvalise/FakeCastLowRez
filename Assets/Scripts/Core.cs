@@ -13,7 +13,7 @@ public class Core : MonoBehaviour
 
 	public RawImage		_image;
 	public Player		_player1;
-	public Player		_player2;
+	//public Player		_player2;
 
 	private Color[]		_pixels = new Color[_width * _height];
 	private Texture2D	_texture;
@@ -36,7 +36,7 @@ public class Core : MonoBehaviour
 		_mainGrid = new MainGrid();
 		_mainGrid.Setup();
 		_player1.Setup();
-		_player2.Setup();
+		//_player2.Setup();
 
 		foreach (ACellObject obj in _ui)
 			obj.Setup();
@@ -50,7 +50,7 @@ public class Core : MonoBehaviour
 			Bullet[] bullets = FindObjectsOfType(typeof(Bullet)) as Bullet[];
 			_deltaSpeed = 0f;
 			_player1.Simulate();
-			_player2.Simulate();
+			//_player2.Simulate();
 			// Manage collision between bullets
 			for (int i = bullets.Length - 1; i >= 0; i--) {
 				for (int j = bullets.Length - 1; j >= 0; j--) {
@@ -68,7 +68,7 @@ public class Core : MonoBehaviour
 				obj.Simulate();
 			_mainGrid.Simulate();
 			_player1.Add(_mainGrid._automaton._cells, _mainGrid._staticGrid);
-			_player2.Add(_mainGrid._automaton._cells, _mainGrid._staticGrid);
+			//_player2.Add(_mainGrid._automaton._cells, _mainGrid._staticGrid);
 			foreach (Bullet bullet in bullets)
 				bullet.Add(_mainGrid._automaton._cells, _mainGrid._staticGrid);
 			foreach (ACellObject obj in _ui)

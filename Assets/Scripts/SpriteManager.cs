@@ -44,6 +44,11 @@ public class SpriteManager : MonoBehaviour
 			_side = p_side;
 	}
 
+	public Vector2 GetSide()
+	{
+		return _side;
+	}
+
 	public void PlayNext(string p_spriteState)
 	{
 		if (_current != p_spriteState)

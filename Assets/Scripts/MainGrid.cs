@@ -75,18 +75,28 @@ public class MainGrid : ACellObject
 		{
 			for (int x = _map.width - 1; x >= 0; x--)
 			{
-				if (_map.GetPixel(x, y).a != 0)
+				if (y == Core._width - 1 || y == 0 || x ==  Core._height - 1 || x == 0)
 				{
-					_automaton._cells[x, y].rulset = RulesetList.Death;
-					_automaton._copy[x, y].rulset = RulesetList.Death;
+					_automaton._cells[x, y].state = Cell.State.Alive;
+					_automaton._copy[x, y].state = Cell.State.Alive;
+					_automaton._cells[x, y].value = 1f;
+					_automaton._copy[x, y].value = 1f;
 				}
 				else
 				{
-					_automaton._cells[x, y].rulset = rulset;
-					_automaton._copy[x, y].rulset = rulset;
+					if (_map.GetPixel(x, y).a != 0)
+					{
+						_automaton._cells[x, y].rulset = RulesetList.Death;
+						_automaton._copy[x, y].rulset = RulesetList.Death;
+					}
+					else
+					{
+						_automaton._cells[x, y].rulset = rulset;
+						_automaton._copy[x, y].rulset = rulset;
+					}
+					_automaton._cells[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
+					_automaton._copy[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
 				}
-				_automaton._cells[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
-				_automaton._copy[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
 			}
 		}
 	}

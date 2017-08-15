@@ -132,6 +132,7 @@ public class Player : ACellObject
 	private void SetSpriteSide()
 	{
 		//Follow target
+		/*
 		if (_state == PlayerState.CastSkill)
 		{
 			Vector2 position = transform.position;
@@ -151,7 +152,8 @@ public class Player : ACellObject
 			}
 		}
 		else
-			_side = _movement;
+		*/
+		_side = _movement;
 
 		_spriteManager.SetSide(_side);
 
