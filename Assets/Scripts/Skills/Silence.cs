@@ -5,10 +5,11 @@ using UnityEngine;
 public class Silence : ASkill
 {
 	public float	_duration;
+	public ColorHSV	_silenceColor = new ColorHSV(Color.green);
 
 	void Start ()
 	{
-		base.Init(1.0f, 5.0f, _owner._silence);
+		base.Init(1.0f, 5.0f, _owner._silence, _silenceColor);
 	}
 
 	public override void Cast(Player p_owner)

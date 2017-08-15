@@ -6,7 +6,7 @@ public class MainGrid : ACellObject
 	public Cell[,]				_staticGrid;
 
 	private Ruleset				_ruleset;
-	private float				_startNoise = 0.05f;
+	private float				_startNoise = 0.3f;
 	private bool				_aliveBorders = false;
 	private Texture2D			_map;
 
@@ -16,7 +16,7 @@ public class MainGrid : ACellObject
 		_automaton = new Automaton(Core._width, Core._height, _ruleset, _startNoise, _aliveBorders);
 		_staticGrid = new Cell[Core._width, Core._height];
 		//FillOneRuleset(Ruleset.life);
-		FillFromTexture(RulesetList.Anneal);
+		FillFromTexture(RulesetList.Mazectric);
 	}
 
 	public override void Simulate()

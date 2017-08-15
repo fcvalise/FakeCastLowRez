@@ -62,7 +62,7 @@ public class Automaton : MonoBehaviour
 				ComputeState(ref _cells[x, y], ref _copy[x, y], aliveCells);
 				ComputeValue(ref _cells[x, y]);
 
-				if (_cells[x, y].value >= 10f)
+				if (_cells[x, y].value >= 1.3f)
 					_cells[x, y].state = Cell.State.Dead;
 
 				_copy[x, y].value = _cells[x, y].value;
@@ -105,7 +105,7 @@ public class Automaton : MonoBehaviour
 	private void ComputeValue(ref Cell cell)
 	{
 		if (cell.state == Cell.State.Alive)
-			cell.value = 1f;//Mathf.Clamp(cell.value + Time.deltaTime * 10f, 0f, 10f);
+			cell.value = Mathf.Clamp(cell.value + Time.deltaTime * 10f, 0f, 10f);
 		else
 			cell.value = Mathf.Max(cell.value - Time.deltaTime * 5f, 0f);
 	}

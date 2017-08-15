@@ -6,8 +6,9 @@ public class Bullet : ACellObject
 {
 	public int					_speed;
 	public CellSprite			_sprite;
+	public ColorHSV				_bulletColor;
 
-	private Vector2			_target;
+	private GameObject			_target;
 	private Cell[,]				_cells;
 	private Vector2				_movement;
 
@@ -18,9 +19,9 @@ public class Bullet : ACellObject
 	}
 
 	//TODO : Really not a good way...
-	public void SetSideAndTarget(Vector2 side)
+	public void SetSideAndTarget(GameObject target, Vector2 side)
 	{
-		_target = side * 100000;
+		_target = target;
 		_sprite.SetSide(side);
 	}
 
@@ -29,16 +30,16 @@ public class Bullet : ACellObject
 		UpdatePosition();
 		UpdateSprite();
 		//Find a proper way to get collision
-		//int accuracy = 3; // For accuracy = 1 the position need to be exactly the same
-		//if ((int)(transform.position.x / accuracy) == (int)(_target.transform.position.x / accuracy) &&
-		//	(int)(transform.position.y / accuracy) == (int)(_target.transform.position.y / accuracy))
-		//	Destroy(gameObject);
+		int accuracy = 3; // For accuracy = 1 the position need to be exactly the same
+		if ((int)(transform.position.x / accuracy) == (int)(_target.transform.position.x / accuracy) &&
+			(int)(transform.position.y / accuracy) == (int)(_target.transform.position.y / accuracy))
+			Destroy(gameObject);
 	}
 
 	private void UpdatePosition()
 	{
 		Vector2 position = transform.position;
-		Vector2 targetPosition = _target;
+		Vector2 targetPosition = _target.transform.position;
 		_movement = (targetPosition - position).normalized;
 		position += _movement * _speed;
 		position.x = Mathf.Clamp(position.x, 1, Core._width - _sprite._size.x);
@@ -60,14 +61,15 @@ public class Bullet : ACellObject
 		{
 			for (int y = 0; y < _sprite._size.y; y++)
 			{
-				/*
 				p_staticGrid[x + position.x, y + position.y].value = _cells[x, y].value;
 				p_staticGrid[x + position.x, y + position.y].state = _cells[x, y].state;
 				p_staticGrid[x + position.x, y + position.y].color = _cells[x, y].color;
-				*/
 				//TODO : Rework, the SpriteCell should take car of that
-				//if (_sprite._printOnAutomaton && _cells[x, y].state == Cell.State.Alive)
-					p_automaton[x + position.x, y + position.y].state = Cell.State.Dead;
+				if (_sprite._printOnAutomaton && _cells[x, y].state == Cell.State.Alive)
+				{
+					p_staticGrid[x + position.x, y + position.y].color = _bulletColor;
+					p_automaton[x + position.x, y + position.y].state = _cells[x, y].state;
+				}
 			}
 		}
 	}

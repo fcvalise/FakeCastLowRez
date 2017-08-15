@@ -16,6 +16,7 @@ public class Player : ACellObject
 	public GameObject			_target;
 	public ProgressBar			_lifeBar;
 	public ProgressBar			_castBar;
+	public ColorHSV				_castColor = new ColorHSV(Color.blue);
 
 	public KeyCode				_up;
 	public KeyCode				_down;
@@ -23,6 +24,7 @@ public class Player : ACellObject
 	public KeyCode				_left;
 	public KeyCode				_cast;
 	public KeyCode				_silence;
+	public KeyCode				_shield;
 
 	private Cell[,]				_cells;
 	private SpriteManager		_spriteManager;
@@ -132,7 +134,6 @@ public class Player : ACellObject
 	private void SetSpriteSide()
 	{
 		//Follow target
-		/*
 		if (_state == PlayerState.CastSkill)
 		{
 			Vector2 position = transform.position;
@@ -152,8 +153,7 @@ public class Player : ACellObject
 			}
 		}
 		else
-		*/
-		_side = _movement;
+			_side = _movement;
 
 		_spriteManager.SetSide(_side);
 
@@ -173,7 +173,10 @@ public class Player : ACellObject
 					if (_cells[x, y].state == Cell.State.Alive)
 					{
 						p_staticGrid[x + position.x, y + position.y].value = _cells[x, y].value;
-						p_staticGrid[x + position.x, y + position.y].color = ColorHSV.Lerp(_cells[x, y].color, _colorDamage, _colorFactor);
+						if (_cells[x, y].color == new ColorHSV(Color.white))
+							p_staticGrid[x + position.x, y + position.y].color = _castColor;
+						else
+							p_staticGrid[x + position.x, y + position.y].color = ColorHSV.Lerp(_cells[x, y].color, _colorDamage, _colorFactor);
 						p_staticGrid[x + position.x, y + position.y].state = _cells[x, y].state;
 					}
 

@@ -13,6 +13,7 @@ public abstract class ASkill : MonoBehaviour
 
 	public Buff			_ui;
 	protected Player	_owner;
+	protected ColorHSV	_castColor;
 	private float		_castDuration = 0.0f;
 	private float		_cooldownDuration = 0.0f;
 	private float		_castTimer = 0.0f;
@@ -30,11 +31,12 @@ public abstract class ASkill : MonoBehaviour
 		_owner = GetComponent<Player>();
 	}
 
-	protected void Init(float p_castDuration, float p_cooldownDuration, KeyCode key)
+	protected void Init(float p_castDuration, float p_cooldownDuration, KeyCode key, ColorHSV color)
 	{
 		_castDuration = p_castDuration;
 		_cooldownDuration = p_cooldownDuration;
 		_key = key;
+		_castColor = color;
 	}
 
 	// TODO update cast bar
@@ -56,7 +58,7 @@ public abstract class ASkill : MonoBehaviour
 
 		case SkillState.Casting:
 			_castTimer -= Time.deltaTime;
-
+			_owner._castColor = _castColor;
 			_owner.SetCastingPercent(1.0f - (_castTimer / _castDuration));
 			if (_owner.IsSilence || _owner.IsMoving())
 			{
