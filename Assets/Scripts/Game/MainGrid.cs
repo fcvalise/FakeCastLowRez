@@ -18,7 +18,7 @@ public class MainGrid : ACellObject
 		_automaton = new Automaton(Core._width, Core._height, _ruleset, _startNoise, _aliveBorders);
 		_staticGrid = new Cell[Core._width, Core._height];
 		//FillOneRuleset(Ruleset.life);
-		FillFromTexture(RulesetList.Mazectric);
+		FillFromTexture(RulesetList.Coral);
 	}
 
 	public override void Simulate()
@@ -77,6 +77,7 @@ public class MainGrid : ACellObject
 		{
 			for (int x = _map.width - 1; x >= 0; x--)
 			{
+				/*
 				if (y == Core._width - 1 || y == 0 || x ==  Core._height - 1 || x == 0)
 				{
 					_automaton._cells[x, y].state = Cell.State.Alive;
@@ -86,6 +87,7 @@ public class MainGrid : ACellObject
 				}
 				else
 				{
+				*/
 					if (_map.GetPixel(x, y).a != 0)
 					{
 						_automaton._cells[x, y].rulset = RulesetList.Death;
@@ -98,7 +100,7 @@ public class MainGrid : ACellObject
 					}
 					_automaton._cells[x, y].color = new ColorHSV(219f / 360f, 1f, 1f);
 					_automaton._copy[x, y].color = new ColorHSV(219f / 360f, 1f, 1f);
-				}
+				//}
 			}
 		}
 	}

@@ -26,7 +26,6 @@ public class Core : MonoBehaviour
 
 	private void Awake()
 	{
-		//GetComponent<RulesetList>().Setup();
 		_texture = new Texture2D(_width, _height, TextureFormat.ARGB32, false, true)
 		{
 			filterMode = FilterMode.Point

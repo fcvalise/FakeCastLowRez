@@ -42,6 +42,7 @@ public class Player : ACellObject
 	private PlayerState			_state = PlayerState.None;
 	private float				_colorFactor;
 	private ColorHSV			_colorDamage;
+	public Font					_font;
 
 	public AudioClip	_sound;
 	private AudioSource	_audioSource;
@@ -287,8 +288,9 @@ public class Player : ACellObject
 	void OnGUI()
 	{
 		_guiStyle.normal.textColor = Color.blue;
-		_guiStyle.fontSize = 15;
-		if (_life <= 0 && GUI.Button(new Rect(8, 20, 56, 40), "Replay!", _guiStyle))
+		_guiStyle.font = _font;
+		_guiStyle.fontSize = 50;
+		if (_life <= 0 && GUI.Button(new Rect(120, 200, 400, 400), "Replay!", _guiStyle))
 			SceneManager.LoadScene("Game");
 	}
 

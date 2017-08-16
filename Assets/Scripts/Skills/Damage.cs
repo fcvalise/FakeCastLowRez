@@ -60,7 +60,7 @@ public class Damage : ACellObject
 
 	private void UpdateCollision()
 	{
-		if (Vector2.Distance(transform.position, _target.transform.position) < 3.0f)
+		if (Vector2.Distance(transform.position, _target.transform.position) < 2.0f)
 		{
 			Destroy(gameObject);
 			if (_target.GetComponent<Shield>() != null)
