@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(AudioSource))]
 public abstract class ASkill : MonoBehaviour
 {
 	enum SkillState
@@ -13,6 +14,7 @@ public abstract class ASkill : MonoBehaviour
 
 	public Buff			_ui;
 	protected Player	_owner;
+	protected ColorHSV	_castColor;
 	private float		_castDuration = 0.0f;
 	private float		_cooldownDuration = 0.0f;
 	private float		_castTimer = 0.0f;
@@ -20,25 +22,24 @@ public abstract class ASkill : MonoBehaviour
 	private SkillState	_state;
 
 	private KeyCode		_key;
-
-	private ColorHSV	_guiColor = new ColorHSV(219f / 360f, 1f, 1f);
-	private GUIStyle	_guiStyle = new GUIStyle();
+	public AudioClip	_sound;
+	private AudioSource	_audioSource;
 
 	void Awake()
 	{
 		_state = SkillState.Waiting;
 		_owner = GetComponent<Player>();
+		_audioSource = gameObject.AddComponent<AudioSource>();
 	}
 
-	protected void Init(float p_castDuration, float p_cooldownDuration, KeyCode key)
+	protected void Init(float p_castDuration, float p_cooldownDuration, KeyCode key, ColorHSV color)
 	{
 		_castDuration = p_castDuration;
 		_cooldownDuration = p_cooldownDuration;
 		_key = key;
+		_castColor = color;
 	}
 
-	// TODO update cast bar
-	// Add input in player
 	void Update()
 	{
 		if (_ui != null)
@@ -56,19 +57,21 @@ public abstract class ASkill : MonoBehaviour
 
 		case SkillState.Casting:
 			_castTimer -= Time.deltaTime;
-
+			_owner._castColor = _castColor;
+			_owner.GetComponent<UIPlayer>().SetCastPercent(1.0f - (_castTimer / _castDuration));
 			_owner.SetCastingPercent(1.0f - (_castTimer / _castDuration));
 			if (_owner.IsSilence || _owner.IsMoving())
 			{
-				_cooldown = _cooldownDuration;
 				_state = SkillState.Cooldown;
 				_owner.SetState(Player.PlayerState.None);
 				_owner.SetCastingPercent(0.0f);
 			}
 			else if (_castTimer <= 0.0f)
 			{
+				_owner.GetComponent<UIPlayer>().SetCastPercent(0.0f);
 				_owner.SetCastingPercent(0.0f);
 				Cast(_owner);
+				_audioSource.PlayOneShot(_sound, 1.0f);
 				_cooldown = _cooldownDuration;
 				_state = SkillState.Cooldown;
 				_owner.SetState(Player.PlayerState.Shoot);
@@ -88,31 +91,9 @@ public abstract class ASkill : MonoBehaviour
 		}
 	}
 
-	void OnGUI()
+	public float GetCDPercent()
 	{
-		_guiStyle.fontSize = 2;
-		string str = "";
-		if (_state == SkillState.Casting)
-		{
-			float coef = _castTimer / _castDuration;
-			int progress = (int)((1 - coef) * Core._width);
-
-			_guiColor.s = coef;
-			_guiColor.a = 1 - coef;
-			_guiStyle.normal.textColor = _guiColor.ToColor();
-
-			for (int i = 0; i < progress; i++)
-				str += "█";
-		}
-		else if (_state == SkillState.Cooldown)
-		{
-			_guiStyle.normal.textColor = Color.white;
-
-			int progress = (int)((_cooldown / _cooldownDuration) * Core._width);
-			for (int i = 0; i < progress; i++)
-				str += "█";
-		}
-		GUI.Label(new Rect(0, 0, 64, 64), str, _guiStyle);
+		return _cooldown / _cooldownDuration;
 	}
 
 	public abstract void Cast(Player p_owner);

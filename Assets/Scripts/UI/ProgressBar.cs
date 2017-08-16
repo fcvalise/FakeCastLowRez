@@ -12,11 +12,13 @@ public class ProgressBar : ACellObject {
 
 	public float _percent = 0.5f;
 
-	public override void Setup()
+	public override int GetZIndex() { return 1; }
+
+	private void Awake()
 	{
-		_sprite.Create();
+		_sprite = _sprite.AddSprite(gameObject);
 		_cells = new Cell[_sprite._size.x, _sprite._size.y];
-		_spriteFill.Create();
+		_spriteFill = _spriteFill.AddSprite(gameObject);
 		_cellsFill = new Cell[_spriteFill._size.x, _spriteFill._size.y];
 	}
 
@@ -34,7 +36,7 @@ public class ProgressBar : ACellObject {
 		{
 			for (int y = 0; y < _sprite._size.y; y++)
 			{
-				if (_sprite._printOnAutomaton && _cells[x, y].state == Cell.State.Alive)
+				if (_cells[x, y].state == Cell.State.Alive)
 				{
 					p_staticGrid[x + position.x, y + position.y].value = _cells[x, y].value;
 					p_staticGrid[x + position.x, y + position.y].state = _cells[x, y].state;
