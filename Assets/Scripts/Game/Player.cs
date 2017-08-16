@@ -43,6 +43,9 @@ public class Player : ACellObject
 	private float				_colorFactor;
 	private ColorHSV			_colorDamage;
 
+	public AudioClip	_sound;
+	private AudioSource	_audioSource;
+
 	public override int GetZIndex() { return 6; }
 
 	private void Awake()
@@ -54,6 +57,7 @@ public class Player : ACellObject
 		transform.position = new Vector2(64 / 2, 64 / 2);
 		_cells = new Cell[(int)_size.x, (int)_size.y];
 		_colorDamage = GetComponent<CastDamage>()._damageColor;
+		_audioSource = gameObject.AddComponent<AudioSource>();
 	}
 
 	public override void Simulate()
@@ -126,7 +130,12 @@ public class Player : ACellObject
 				if (_movement != Vector2.zero || _lastMovement != Vector2.zero)
 					_spriteManager.PlayNext("player_walk");
 				else if (_life <= 0)
+				{
+					if (_spriteManager.GetState() != "player_lay")
+						_audioSource.PlayOneShot(_sound, 1.0f);
+					_colorDamage = new ColorHSV(Color.black);
 					_spriteManager.PlayNext("player_lay");
+				}
 				else
 					_spriteManager.PlayNext("player_idle");
 			}
@@ -213,13 +222,15 @@ public class Player : ACellObject
 						p_staticGrid[x + position.x, y + position.y].state = _cells[x, y].state;
 					}
 
-					if (_cells[x, y].state == Cell.State.Alive && p_automaton[x + position.x, y + position.y].state == Cell.State.Alive) {
+					if (_cells[x, y].state == Cell.State.Alive && p_automaton[x + position.x, y + position.y].state == Cell.State.Alive)
+					{
 						isOnAliveCell = true;
 					}
 				}
 			}
 		}
-		if (isOnAliveCell) {
+		if (isOnAliveCell)
+		{
 			_life -= 1;
 			StartCoroutine(DamageColorCo());
 		}

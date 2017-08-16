@@ -65,7 +65,10 @@ public class Shield : ACellObject
 				if (_cells[x, y].state == Cell.State.Alive)
 				{
 					p_staticGrid[x + position.x, y + position.y].state = _cells[x, y].state;
-					p_staticGrid[x + position.x, y + position.y].color = _colorShield;
+					if (_cells[x, y].color == new ColorHSV(Color.white))
+						p_staticGrid[x + position.x, y + position.y].color = _colorShield;
+					else
+						p_staticGrid[x + position.x, y + position.y].color = _cells[x, y].color;
 					p_automaton[x + position.x, y + position.y].state = Cell.State.Dead;
 				}
 			}

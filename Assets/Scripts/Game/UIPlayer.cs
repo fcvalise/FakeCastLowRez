@@ -63,7 +63,7 @@ public class UIPlayer : ACellObject
 				_cells[x, 2].color = gameObject.GetComponent<CastSilence>()._silenceColor;
 			}
 
-			if ((float)x <= gameObject.GetComponent<Player>().GetLifePercent() * _size.x)
+			if ((float)x < gameObject.GetComponent<Player>().GetLifePercent() * _size.x)
 				_cells[x, 0].color = gameObject.GetComponent<CastDamage>()._damageColor;
 			else
 				_cells[x, 0].color = none;
