@@ -2,15 +2,17 @@
 
 public class MainGrid : ACellObject
 {
-	public Automaton			_automaton;
-	public Cell[,]				_staticGrid;
+	[HideInInspector]public Automaton	_automaton;
+	[HideInInspector]public Cell[,]		_staticGrid;
 
-	private Ruleset				_ruleset;
-	private float				_startNoise = 0.0f;
-	private bool				_aliveBorders = false;
-	private Texture2D			_map;
+	private Ruleset						_ruleset;
+	private float						_startNoise = 0.0f;
+	private bool						_aliveBorders = false;
+	private Texture2D					_map;
 
-	public override void Setup()
+	public override int GetZIndex() { return 0; }
+
+	private void Awake()
 	{
 		_map = (Texture2D)Resources.Load("Textures/map_empty");
 		_automaton = new Automaton(Core._width, Core._height, _ruleset, _startNoise, _aliveBorders);
@@ -94,8 +96,8 @@ public class MainGrid : ACellObject
 						_automaton._cells[x, y].rulset = rulset;
 						_automaton._copy[x, y].rulset = rulset;
 					}
-					_automaton._cells[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
-					_automaton._copy[x, y].color = new ColorHSV(200f / 360f, 1f, 1f);
+					_automaton._cells[x, y].color = new ColorHSV(219f / 360f, 1f, 1f);
+					_automaton._copy[x, y].color = new ColorHSV(219f / 360f, 1f, 1f);
 				}
 			}
 		}

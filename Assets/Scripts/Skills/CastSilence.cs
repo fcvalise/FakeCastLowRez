@@ -6,7 +6,7 @@ public class CastSilence : ASkill
 {
 	public GameObject	_silence;
 	public float		_duration;
-	public ColorHSV		_silenceColor = new ColorHSV(Color.green);
+	public ColorHSV		_silenceColor = new ColorHSV(134.0f / 360.0f, 0.55f, 1.0f, 0.6f);
 
 	private GameObject	_targetObject;
 
@@ -30,7 +30,6 @@ public class CastSilence : ASkill
 
 		GameObject damageObject = Instantiate(_silence, target.transform.position, target.transform.rotation);
 		Silence silence = damageObject.GetComponent<Silence>();
-		silence.Setup();
 		silence.SetTarget(_targetObject);
 		silence._silenceColor = _silenceColor;
 	}

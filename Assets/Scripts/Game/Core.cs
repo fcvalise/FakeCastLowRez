@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 //
 // CORE LOOP OF THE GAME
@@ -33,13 +34,7 @@ public class Core : MonoBehaviour
 		_texture.Apply();
 		_image.texture = _texture;
 
-		_mainGrid = new MainGrid();
-		_mainGrid.Setup();
-		_player1.Setup();
-		_player2.Setup();
-
-		foreach (ACellObject obj in _ui)
-			obj.Setup();
+		_mainGrid = gameObject.AddComponent<MainGrid>();
 	}
 
 	private void Update()
@@ -50,6 +45,7 @@ public class Core : MonoBehaviour
 			_deltaSpeed = 0f;
 
 			ACellObject[] cellObjects = FindObjectsOfType(typeof(ACellObject)) as ACellObject[];
+			Array.Sort(cellObjects, CompareZIndex);
 			foreach (ACellObject cellObject in cellObjects)
 			{
 				cellObject.Simulate();
@@ -73,6 +69,11 @@ public class Core : MonoBehaviour
 
 			Draw();
 		}
+	}
+
+	int CompareZIndex(ACellObject x, ACellObject y)
+	{
+		return x.GetZIndex() - y.GetZIndex();
 	}
 
 	private void Draw()

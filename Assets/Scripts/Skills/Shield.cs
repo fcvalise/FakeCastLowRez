@@ -4,14 +4,18 @@ using UnityEngine;
 
 public class Shield : ACellObject
 {
-	public CellSprite			_sprite;
-	public ColorHSV				_colorShield;
+	public CellSprite				_sprite;
+	public ColorHSV					_colorShield;
 
-	private int					_maxLife = 200;
-	private int					_currentLife;
-	private Cell[,]				_cells;
+	[HideInInspector]public bool	_isDestroy = false;
 
-	public override void Setup()
+	private int						_maxLife = 200;
+	private int						_currentLife;
+	private Cell[,]					_cells;
+
+	public override int GetZIndex() { return 2; }
+
+	private void Awake()
 	{
 		_sprite = _sprite.AddSprite(gameObject);
 		_currentLife = _maxLife;
@@ -21,19 +25,33 @@ public class Shield : ACellObject
 	public override void Simulate()
 	{
 		_currentLife -= 1;
-		if (_currentLife == 0)
-			Destroy(this);
+		if (_currentLife == (int)(_maxLife / 5))
+			_sprite._index -= 1;
+		if (_currentLife <= 0)
+			_isDestroy = true;
 		UpdateSprite();
 	}
 
 	private void UpdateSprite()
 	{
-		if (_sprite._mode == CellSprite.Mode.Pause)
-		{
-			int index = Mathf.Min(_currentLife * _sprite._numberOfSprites * 2 / _maxLife, _sprite._numberOfSprites - 1);
-			_sprite.SetIndex(index);
-		}
+		UpdateDestroyShield();
 		_sprite.Simulate(_cells);
+	}
+
+	public void UpdateDestroyShield()
+	{
+		if (_isDestroy)
+		{
+			if (_sprite._mode == CellSprite.Mode.Pause)
+			{
+				int index = _sprite._index - 1;
+
+				if (index < 0)
+					Destroy(gameObject);
+				else
+					_sprite._index = index;
+			}
+		}
 	}
 
 	public override void Add(Cell[,] p_automaton, Cell[,] p_staticGrid)

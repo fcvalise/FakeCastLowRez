@@ -62,7 +62,7 @@ public class Automaton : MonoBehaviour
 				ComputeState(ref _cells[x, y], ref _copy[x, y], aliveCells);
 				ComputeValue(ref _cells[x, y]);
 
-				if (_cells[x, y].value >= 1.3f)
+				if (_cells[x, y].value >= 1f)
 					_cells[x, y].state = Cell.State.Dead;
 
 				_copy[x, y].value = _cells[x, y].value;

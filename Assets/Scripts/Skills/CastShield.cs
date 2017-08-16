@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class CastShield : ASkill
 {
-	public GameObject	_shield;
-	public ColorHSV		_shieldColor = new ColorHSV(Color.blue);
+	public GameObject					_shield;
+	public ColorHSV						_shieldColor = new ColorHSV(219f / 360f, 1f, 1f, 0.6f);
+	[HideInInspector] public GameObject	_currentShield;
+	private GameObject					_lastShield;
 
 	void Start ()
 	{
@@ -14,8 +16,12 @@ public class CastShield : ASkill
 
 	public override void Cast(Player p_owner)
 	{
-		GameObject shield = Instantiate(_shield, p_owner.transform.position, p_owner.transform.rotation);
-		shield.GetComponent<Shield>().Setup();
-		shield.GetComponent<Shield>()._colorShield = _shieldColor;
+		if (_currentShield != null)
+		{
+			_currentShield.GetComponent<Shield>()._isDestroy = true;
+			_lastShield = _currentShield;
+		}
+		_currentShield = Instantiate(_shield, p_owner.transform.position, p_owner.transform.rotation);
+		_currentShield.GetComponent<Shield>()._colorShield = _shieldColor;
 	}
 }

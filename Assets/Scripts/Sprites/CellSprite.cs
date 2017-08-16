@@ -13,22 +13,20 @@ public class CellSprite : MonoBehaviour
 	public Texture2D					_spriteSheet;
 	public int							_numberOfSprites;
 	public bool							_isLoop;
-	public bool							_printOnAutomaton;
 
 	[HideInInspector] public Vector2Int	_size;
 	[HideInInspector] public Mode		_mode = Mode.Play;
+	[HideInInspector] public int		_index = 0;
 
 	private List<Cell[,]>				_cells;
 	private	int							_spriteCount;
 	private Vector2						_side = Vector2.down;
-	private int							_index = 0;
 
 	public void Create(CellSprite sprite)
 	{
 		_spriteSheet = sprite._spriteSheet;
 		_numberOfSprites = sprite._numberOfSprites;
 		_isLoop = sprite._isLoop;
-		_printOnAutomaton = sprite._printOnAutomaton;
 
 		_cells = new List<Cell[,]>();
 		_size = new Vector2Int(_spriteSheet.width / _numberOfSprites, _spriteSheet.height);
@@ -93,7 +91,7 @@ public class CellSprite : MonoBehaviour
 	public void Simulate(Cell[,] p_cells)
 	{
 		PrintToCells(p_cells);
-		if (_index < _numberOfSprites - 1)
+		if (_index < _numberOfSprites - 1 && _mode != Mode.Pause)
 			_index++;
 		else if (_isLoop)
 			_index = 0;
@@ -116,11 +114,6 @@ public class CellSprite : MonoBehaviour
 	{
 		if (p_side == Vector2.left || p_side == Vector2.right || p_side == Vector2.up || p_side == Vector2.down)
 			_side = p_side;
-	}
-
-	public void SetIndex(int index)
-	{
-		_index = index;
 	}
 
 	/*

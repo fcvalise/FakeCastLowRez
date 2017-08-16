@@ -5,8 +5,7 @@ using UnityEngine;
 public class CastDamage : ASkill
 {
 	public GameObject	_damage;
-	public ColorHSV		_damageColor = new ColorHSV(Color.red);
-	private int			_deltaSpawn = 5;
+	public ColorHSV		_damageColor = new ColorHSV(319f / 360f, 0.47f, 1f, 0.6f);
 
 	void Start ()
 	{
@@ -15,10 +14,8 @@ public class CastDamage : ASkill
 
 	public override void Cast(Player p_owner)
 	{
-		Vector3 delta = p_owner.GetComponent<Player>()._side * _deltaSpawn;
-		GameObject damageObject = Instantiate(_damage, p_owner.transform.position + delta, p_owner.transform.rotation);
+		GameObject damageObject = Instantiate(_damage, p_owner.transform.position, p_owner.transform.rotation);
 		Damage damage = damageObject.GetComponent<Damage>();
-		damage.Setup();
 		damage.SetSideAndTarget(p_owner.GetTarget(), p_owner.GetComponent<Player>()._side);
 		damage._damageColor = _damageColor;
 	}

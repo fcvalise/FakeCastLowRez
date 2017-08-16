@@ -16,7 +16,7 @@ public class Player : ACellObject
 	public GameObject			_target;
 	public ProgressBar			_lifeBar;
 	public ProgressBar			_castBar;
-	public ColorHSV				_castColor = new ColorHSV(Color.blue);
+	public ColorHSV				_castColor = new ColorHSV(Color.white);
 
 	public KeyCode				_upKey;
 	public KeyCode				_leftKey;
@@ -43,7 +43,9 @@ public class Player : ACellObject
 	private float				_colorFactor;
 	private ColorHSV			_colorDamage;
 
-	public override void Setup()
+	public override int GetZIndex() { return 5; }
+
+	private void Awake()
 	{
 		_colorDamage = new ColorHSV(new Color(1.0f, 0.0f, 0.0f, 1.0f));
 		_spriteManager = GetComponent<SpriteManager>();
@@ -51,6 +53,7 @@ public class Player : ACellObject
 		_size = new Vector2(10, 10);
 		transform.position = new Vector2(64 / 2, 64 / 2);
 		_cells = new Cell[(int)_size.x, (int)_size.y];
+		_colorDamage = GetComponent<CastDamage>()._damageColor;
 	}
 
 	public override void Simulate()
@@ -59,6 +62,7 @@ public class Player : ACellObject
 		UpdateSpriteManager();
 		_lastMovement = _movement;
 		_lifeBar._percent = (float)(_life) / (float)_lifeMax;
+		AddAim();
 	}
 
 	private void Update()
@@ -136,9 +140,13 @@ public class Player : ACellObject
 		//Follow target
 		if (_state == PlayerState.CastSkill)
 		{
+			Vector2 targetPosition = _target.transform.position;
+
+			// TODO: Generalize that behavior
+			if (_target.GetComponent<CastShield>()._currentShield != null)
+				targetPosition = _target.GetComponent<CastShield>()._currentShield.transform.position;
 			Vector2 position = transform.position;
 			position = position + _size / 2;
-			Vector2 targetPosition = _target.transform.position;
 			_side = targetPosition - position;
 
 			if (Mathf.Abs(_side.x) > Mathf.Abs(_side.y))
@@ -157,6 +165,30 @@ public class Player : ACellObject
 
 		_spriteManager.SetSide(_side);
 
+	}
+
+	private void AddAim()
+	{
+		if (_state == PlayerState.CastSkill)
+		{
+			Vector2 targetPosition = (Vector2)_target.transform.position + _size / 2;
+			ColorHSV color = new ColorHSV(Color.white);
+
+			// TODO: Generalize that behavior
+			if (_target.GetComponent<CastShield>()._currentShield != null)
+			{
+				targetPosition = (Vector2)_target.GetComponent<CastShield>()._currentShield.transform.position + _size / 2;
+				color = _target.GetComponent<CastShield>()._shieldColor;
+			}
+			Vector2 position = transform.position;
+			position = position + _size / 2;
+			Vector2 direction = targetPosition - position;
+			direction.x = Mathf.Clamp(direction.x, -4, 4);
+			direction.y = Mathf.Clamp(direction.y, -4, 4);
+			_cells[5 + (int)direction.x, 5 + (int)direction.y].color = color;
+			_cells[5 + (int)direction.x, 5 + (int)direction.y].value = 1f;
+			_cells[5 + (int)direction.x, 5 + (int)direction.y].state = Cell.State.Alive;
+		}
 	}
 
 	public override void Add(Cell[,] p_automaton, Cell[,] p_staticGrid)
@@ -183,7 +215,6 @@ public class Player : ACellObject
 					if (_cells[x, y].state == Cell.State.Alive && p_automaton[x + position.x, y + position.y].state == Cell.State.Alive) {
 						isOnAliveCell = true;
 					}
-					//	p_automaton[x + position.x, y + position.y].state = _cells[x, y].state;
 				}
 			}
 		}

@@ -54,10 +54,9 @@ public abstract class ASkill : MonoBehaviour
 		case SkillState.Casting:
 			_castTimer -= Time.deltaTime;
 			_owner._castColor = _castColor;
-			_owner.SetCastingPercent(1.0f - (_castTimer / _castDuration));
+			_owner.GetComponent<UIPlayer>().SetCastPercent(1.0f - (_castTimer / _castDuration));
 			if (_owner.IsSilence || _owner.IsMoving())
 			{
-				_cooldown = _cooldownDuration;
 				_state = SkillState.Cooldown;
 				_owner.SetState(Player.PlayerState.None);
 				_owner.SetCastingPercent(0.0f);
