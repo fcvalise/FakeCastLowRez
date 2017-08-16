@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(AudioSource))]
 public abstract class ASkill : MonoBehaviour
 {
 	enum SkillState
@@ -21,11 +22,14 @@ public abstract class ASkill : MonoBehaviour
 	private SkillState	_state;
 
 	private KeyCode		_key;
+	public AudioClip	_sound;
+	private AudioSource	_audioSource;
 
 	void Awake()
 	{
 		_state = SkillState.Waiting;
 		_owner = GetComponent<Player>();
+		_audioSource = gameObject.AddComponent<AudioSource>();
 	}
 
 	protected void Init(float p_castDuration, float p_cooldownDuration, KeyCode key, ColorHSV color)
@@ -55,6 +59,7 @@ public abstract class ASkill : MonoBehaviour
 			_castTimer -= Time.deltaTime;
 			_owner._castColor = _castColor;
 			_owner.GetComponent<UIPlayer>().SetCastPercent(1.0f - (_castTimer / _castDuration));
+			_owner.SetCastingPercent(1.0f - (_castTimer / _castDuration));
 			if (_owner.IsSilence || _owner.IsMoving())
 			{
 				_state = SkillState.Cooldown;
@@ -63,8 +68,10 @@ public abstract class ASkill : MonoBehaviour
 			}
 			else if (_castTimer <= 0.0f)
 			{
+				_owner.GetComponent<UIPlayer>().SetCastPercent(0.0f);
 				_owner.SetCastingPercent(0.0f);
 				Cast(_owner);
+				_audioSource.PlayOneShot(_sound, 1.0f);
 				_cooldown = _cooldownDuration;
 				_state = SkillState.Cooldown;
 				_owner.SetState(Player.PlayerState.Shoot);
@@ -82,6 +89,11 @@ public abstract class ASkill : MonoBehaviour
 		default:
 			break;
 		}
+	}
+
+	public float GetCDPercent()
+	{
+		return _cooldown / _cooldownDuration;
 	}
 
 	public abstract void Cast(Player p_owner);

@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class Damage : ACellObject
 {
-	public int					_speed;
 	public CellSprite			_sprite;
 	public ColorHSV				_damageColor;
 
+	private int					_speed = 2;
 	private GameObject			_target;
 	private Cell[,]				_cells;
 	private Vector2				_movement;
@@ -39,12 +39,17 @@ public class Damage : ACellObject
 	private void UpdatePosition()
 	{
 		Vector2 position = transform.position;
-		Vector2 targetPosition = _target.transform.position;
-		_movement = (targetPosition - position).normalized;
-		position += _movement * _speed;
-		position.x = Mathf.Clamp(position.x, 1, Core._width - _sprite._size.x);
-		position.y = Mathf.Clamp(position.y, 1, Core._height - _sprite._size.y);
-		transform.position = position;
+		if (_target != null)
+		{
+			Vector2 targetPosition = _target.transform.position;
+			_movement = (targetPosition - position).normalized;
+			position += _movement * _speed;
+			position.x = Mathf.Clamp(position.x, 1, Core._width - _sprite._size.x);
+			position.y = Mathf.Clamp(position.y, 1, Core._height - _sprite._size.y);
+			transform.position = position;
+		}
+		else
+			Destroy(gameObject);
 	}
 
 	private void UpdateSprite()

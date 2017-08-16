@@ -29,8 +29,8 @@ public class Player : ACellObject
 	private Cell[,]				_cells;
 	private SpriteManager		_spriteManager;
 	private Vector2				_size;
-	private int					_lifeMax = 300;
-	private int					_life = 300;
+	private int					_lifeMax = 100;
+	private int					_life = 100;
 	private GUIStyle			_guiStyle = new GUIStyle();
 
 	private Vector2				_movement = Vector2.down;
@@ -43,7 +43,7 @@ public class Player : ACellObject
 	private float				_colorFactor;
 	private ColorHSV			_colorDamage;
 
-	public override int GetZIndex() { return 5; }
+	public override int GetZIndex() { return 6; }
 
 	private void Awake()
 	{
@@ -82,6 +82,7 @@ public class Player : ACellObject
 				_movement += Vector2.up;
 			if (Input.GetKey(_downKey))
 				_movement += Vector2.down;
+			GetComponent<UIPlayer>().SetCastPercent(0.0f);
 		}
 	}
 
@@ -253,6 +254,11 @@ public class Player : ACellObject
 	public void SetCastingPercent(float p_percent)
 	{
 		_castBar._percent = p_percent;
+	}
+
+	public float GetLifePercent()
+	{
+		return (float)_life / (float)_lifeMax;
 	}
 
 	private IEnumerator DamageColorCo()
