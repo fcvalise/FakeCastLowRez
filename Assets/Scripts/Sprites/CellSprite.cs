@@ -4,17 +4,24 @@ using UnityEngine;
 
 public class CellSprite : MonoBehaviour
 {
-	public Texture2D				_spriteSheet;
-	public int						_numberOfSprites;
-	public bool						_isLoop;
-	public bool						_printOnAutomaton;
+	public enum Mode
+	{
+		Play,
+		Pause
+	}
 
-	[HideInInspector]
-	public Vector2Int				_size;
-	private List<Cell[,]>			_cells;
-	private	int						_spriteCount;
-	private Vector2					_side = Vector2.down;
-	private int						_index = 0;
+	public Texture2D					_spriteSheet;
+	public int							_numberOfSprites;
+	public bool							_isLoop;
+	public bool							_printOnAutomaton;
+
+	[HideInInspector] public Vector2Int	_size;
+	[HideInInspector] public Mode		_mode = Mode.Play;
+
+	private List<Cell[,]>				_cells;
+	private	int							_spriteCount;
+	private Vector2						_side = Vector2.down;
+	private int							_index = 0;
 
 	public void Create(CellSprite sprite)
 	{
@@ -71,6 +78,18 @@ public class CellSprite : MonoBehaviour
 		}
 	}
 
+	private void PrintToCells(Cell[,] p_cells)
+	{
+		if (_side == Vector2.left)
+			PTUtils.CopyLeft(p_cells, _cells[_index], _size);
+		else if (_side == Vector2.right)
+			PTUtils.CopyRight(p_cells, _cells[_index], _size);
+		else if (_side == Vector2.down)
+			PTUtils.CopyDown(p_cells, _cells[_index], _size);
+		else if (_side == Vector2.up)
+			PTUtils.CopyUp(p_cells, _cells[_index], _size);
+	}
+
 	public void Simulate(Cell[,] p_cells)
 	{
 		PrintToCells(p_cells);
@@ -78,11 +97,14 @@ public class CellSprite : MonoBehaviour
 			_index++;
 		else if (_isLoop)
 			_index = 0;
+		else
+			_mode = Mode.Pause;
 	}
 
 	public void Play()
 	{
 		_index = 0;
+		_mode = Mode.Play;
 	}
 
 	public bool isFinished()
@@ -99,18 +121,6 @@ public class CellSprite : MonoBehaviour
 	public void SetIndex(int index)
 	{
 		_index = index;
-	}
-
-	private void PrintToCells(Cell[,] p_cells)
-	{
-		if (_side == Vector2.left)
-			PTUtils.CopyLeft(p_cells, _cells[_index], _size);
-		else if (_side == Vector2.right)
-			PTUtils.CopyRight(p_cells, _cells[_index], _size);
-		else if (_side == Vector2.down)
-			PTUtils.CopyDown(p_cells, _cells[_index], _size);
-		else if (_side == Vector2.up)
-			PTUtils.CopyUp(p_cells, _cells[_index], _size);
 	}
 
 	/*

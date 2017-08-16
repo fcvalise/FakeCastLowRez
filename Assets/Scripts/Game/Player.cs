@@ -18,13 +18,13 @@ public class Player : ACellObject
 	public ProgressBar			_castBar;
 	public ColorHSV				_castColor = new ColorHSV(Color.blue);
 
-	public KeyCode				_up;
-	public KeyCode				_down;
-	public KeyCode				_right;
-	public KeyCode				_left;
-	public KeyCode				_cast;
-	public KeyCode				_silence;
-	public KeyCode				_shield;
+	public KeyCode				_upKey;
+	public KeyCode				_leftKey;
+	public KeyCode				_downKey;
+	public KeyCode				_rightKey;
+	public KeyCode				_damageKey;
+	public KeyCode				_shieldKey;
+	public KeyCode				_silenceKey;
 
 	private Cell[,]				_cells;
 	private SpriteManager		_spriteManager;
@@ -65,18 +65,18 @@ public class Player : ACellObject
 	{
 		_movement = Vector2.zero;
 
-		if (Input.GetKey(_right) || Input.GetKey(_left) || Input.GetKey(_up) || Input.GetKey(_down))
+		if (Input.GetKey(_rightKey) || Input.GetKey(_leftKey) || Input.GetKey(_upKey) || Input.GetKey(_downKey))
 			_state = PlayerState.None;
 
 		if (_state == PlayerState.None || _state == PlayerState.Shoot)
 		{
-			if (Input.GetKey(_right))
+			if (Input.GetKey(_rightKey))
 				_movement += Vector2.right;
-			if (Input.GetKey(_left))
+			if (Input.GetKey(_leftKey))
 				_movement += Vector2.left;
-			if (Input.GetKey(_up))
+			if (Input.GetKey(_upKey))
 				_movement += Vector2.up;
-			if (Input.GetKey(_down))
+			if (Input.GetKey(_downKey))
 				_movement += Vector2.down;
 		}
 	}
@@ -237,15 +237,7 @@ public class Player : ACellObject
 
 	void OnGUI()
 	{
-		_guiStyle.fontSize = 2;
-		string str = "";
 		_guiStyle.normal.textColor = Color.blue;
-
-		for (int i = 0; i < _life; i++)
-			str += "█";
-
-		GUI.Label(new Rect(0, 63, 64, 64), str, _guiStyle);
-
 		_guiStyle.fontSize = 15;
 		if (_life <= 0 && GUI.Button(new Rect(8, 20, 56, 40), "Replay!", _guiStyle))
 			SceneManager.LoadScene("Game");

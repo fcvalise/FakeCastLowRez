@@ -8,8 +8,6 @@ public class SpriteManager : MonoBehaviour
 	public string							_initial;
 	public CellSprite[]						_spritesData;
 
-	//[HideInInspector]
-	//public Vector2Int						_size;
 	private Dictionary<string, CellSprite>	_sprites;
 	private string							_current;
 	private Vector2							_side;
@@ -53,7 +51,6 @@ public class SpriteManager : MonoBehaviour
 		{
 			_current = p_spriteState;
 			_sprites[_current].Play();
-			//_size = _sprites[_current]._size;
 		}
 	}
 

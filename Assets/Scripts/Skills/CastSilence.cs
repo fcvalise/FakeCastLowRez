@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Silence : ASkill
+public class CastSilence : ASkill
 {
 	public float	_duration;
 	public ColorHSV	_silenceColor = new ColorHSV(Color.green);
 
 	void Start ()
 	{
-		base.Init(1.0f, 5.0f, _owner._silence, _silenceColor);
+		base.Init(0.4f, 5.0f, _owner._silenceKey, _silenceColor);
 	}
 
 	public override void Cast(Player p_owner)

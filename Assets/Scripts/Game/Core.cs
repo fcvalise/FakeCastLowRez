@@ -47,24 +47,24 @@ public class Core : MonoBehaviour
 		_deltaSpeed += Time.deltaTime;
 		if (_deltaSpeed > 1f / _speed)
 		{
-			Bullet[] bullets = FindObjectsOfType(typeof(Bullet)) as Bullet[];
+			Damage[] damages = FindObjectsOfType(typeof(Damage)) as Damage[];
 			Shield[] shields = FindObjectsOfType(typeof(Shield)) as Shield[];
 			_deltaSpeed = 0f;
 			_player1.Simulate();
 			_player2.Simulate();
-			// Manage collision between bullets
-			for (int i = bullets.Length - 1; i >= 0; i--) {
-				for (int j = bullets.Length - 1; j >= 0; j--) {
-					if (bullets[i] != bullets[j]) {
-						if (Vector3.Distance(bullets[i].transform.position, bullets[j].transform.position) < 5.0f) {
-							Destroy(bullets[i].gameObject);
-							Destroy(bullets[j].gameObject);
+			// Manage collision between damages
+			for (int i = damages.Length - 1; i >= 0; i--) {
+				for (int j = damages.Length - 1; j >= 0; j--) {
+					if (damages[i] != damages[j]) {
+						if (Vector3.Distance(damages[i].transform.position, damages[j].transform.position) < 5.0f) {
+							Destroy(damages[i].gameObject);
+							Destroy(damages[j].gameObject);
 						}
 					}
 				}
 			}
-			foreach (Bullet bullet in bullets)
-				bullet.Simulate();
+			foreach (Damage damage in damages)
+				damage.Simulate();
 			foreach (Shield shield in shields)
 				shield.Simulate();
 			foreach (ACellObject obj in _ui)
@@ -72,8 +72,8 @@ public class Core : MonoBehaviour
 			
 			_mainGrid.Simulate();
 
-			foreach (Bullet bullet in bullets)
-				bullet.Add(_mainGrid._automaton._cells, _mainGrid._staticGrid);
+			foreach (Damage damage in damages)
+				damage.Add(_mainGrid._automaton._cells, _mainGrid._staticGrid);
 			foreach (ACellObject obj in _ui)
 				obj.Add(_mainGrid._automaton._cells, _mainGrid._staticGrid);
 			foreach (Shield shield in shields)

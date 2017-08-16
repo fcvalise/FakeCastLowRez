@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Bullet : ACellObject
+public class Damage : ACellObject
 {
 	public int					_speed;
 	public CellSprite			_sprite;
-	public ColorHSV				_bulletColor;
+	public ColorHSV				_damageColor;
 
 	private GameObject			_target;
 	private Cell[,]				_cells;
@@ -67,7 +67,7 @@ public class Bullet : ACellObject
 				//TODO : Rework, the SpriteCell should take car of that
 				if (_sprite._printOnAutomaton && _cells[x, y].state == Cell.State.Alive)
 				{
-					p_staticGrid[x + position.x, y + position.y].color = _bulletColor;
+					p_staticGrid[x + position.x, y + position.y].color = _damageColor;
 					p_automaton[x + position.x, y + position.y].state = _cells[x, y].state;
 				}
 			}

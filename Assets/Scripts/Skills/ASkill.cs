@@ -22,9 +22,6 @@ public abstract class ASkill : MonoBehaviour
 
 	private KeyCode		_key;
 
-	private ColorHSV	_guiColor = new ColorHSV(219f / 360f, 1f, 1f);
-	private GUIStyle	_guiStyle = new GUIStyle();
-
 	void Awake()
 	{
 		_state = SkillState.Waiting;
@@ -39,8 +36,6 @@ public abstract class ASkill : MonoBehaviour
 		_castColor = color;
 	}
 
-	// TODO update cast bar
-	// Add input in player
 	void Update()
 	{
 		if (_ui != null)
@@ -88,33 +83,6 @@ public abstract class ASkill : MonoBehaviour
 		default:
 			break;
 		}
-	}
-
-	void OnGUI()
-	{
-		_guiStyle.fontSize = 2;
-		string str = "";
-		if (_state == SkillState.Casting)
-		{
-			float coef = _castTimer / _castDuration;
-			int progress = (int)((1 - coef) * Core._width);
-
-			_guiColor.s = coef;
-			_guiColor.a = 1 - coef;
-			_guiStyle.normal.textColor = _guiColor.ToColor();
-
-			for (int i = 0; i < progress; i++)
-				str += "█";
-		}
-		else if (_state == SkillState.Cooldown)
-		{
-			_guiStyle.normal.textColor = Color.white;
-
-			int progress = (int)((_cooldown / _cooldownDuration) * Core._width);
-			for (int i = 0; i < progress; i++)
-				str += "█";
-		}
-		GUI.Label(new Rect(0, 0, 64, 64), str, _guiStyle);
 	}
 
 	public abstract void Cast(Player p_owner);
