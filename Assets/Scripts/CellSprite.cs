@@ -14,7 +14,7 @@ public class CellSprite : MonoBehaviour
 	private List<Cell[,]>			_cells;
 	private	int						_spriteCount;
 	private Vector2					_side = Vector2.down;
-	public int						_index = 0;
+	private int						_index = 0;
 
 	public void Create(CellSprite sprite)
 	{
@@ -96,64 +96,24 @@ public class CellSprite : MonoBehaviour
 			_side = p_side;
 	}
 
+	public void SetIndex(int index)
+	{
+		_index = index;
+	}
+
 	private void PrintToCells(Cell[,] p_cells)
 	{
 		if (_side == Vector2.left)
-			CopyLeft(p_cells);
+			PTUtils.CopyLeft(p_cells, _cells[_index], _size);
 		else if (_side == Vector2.right)
-			CopyRight(p_cells);
+			PTUtils.CopyRight(p_cells, _cells[_index], _size);
 		else if (_side == Vector2.down)
-			CopyDown(p_cells);
+			PTUtils.CopyDown(p_cells, _cells[_index], _size);
 		else if (_side == Vector2.up)
-			CopyUp(p_cells);
+			PTUtils.CopyUp(p_cells, _cells[_index], _size);
 	}
 
-	private void CopyUp(Cell[,] p_array)
-	{
-		for (int y = 0; y < _size.y; y++)
-		{
-			for (int x = 0 ; x < _size.x; x++)
-			{
-				p_array[x, y] = _cells[_index][x, y];
-			}
-		}
-	}
-
-	private void CopyDown(Cell[,] p_array)
-	{
-		for (int y = 0; y < _size.y; y++)
-		{
-			for (int x = 0 ; x < _size.x; x++)
-			{
-				p_array[x, y] = _cells[_index][x, _size.y - 1 - y];
-			}
-		}
-	}
-
-	private void CopyLeft(Cell[,] p_array)
-	{
-		//TODO : Only working with square textures
-		for (int y = 0; y < _size.y; y++)
-		{
-			for (int x = 0 ; x < _size.x; x++)
-			{
-				p_array[y, x] = _cells[_index][x, _size.y - 1 - y];
-			}
-		}
-	}
-
-	private void CopyRight(Cell[,] p_array)
-	{
-		//TODO : Only working with square textures
-		for (int y = 0; y < _size.y; y++)
-		{
-			for (int x = 0 ; x < _size.x; x++)
-			{
-				p_array[y, x] = _cells[_index][x, y];
-			}
-		}
-	}
-		
+	/*
 	private void DebugCells()
 	{
 		foreach (Cell[,] cell in _cells)
@@ -174,4 +134,5 @@ public class CellSprite : MonoBehaviour
 			Debug.Log(s);
 		}
 	}
+	*/
 }

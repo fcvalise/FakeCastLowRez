@@ -17,7 +17,7 @@ public class Buff : ACellObject {
 
 	public override void Simulate()
 	{
-		_sprite._index = _number;
+		_sprite.SetIndex(_number);
 		_sprite.Simulate(_cells);
 	}
 
