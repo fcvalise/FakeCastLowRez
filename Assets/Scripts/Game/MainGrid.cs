@@ -6,7 +6,7 @@ public class MainGrid : ACellObject
 	public Cell[,]				_staticGrid;
 
 	private Ruleset				_ruleset;
-	private float				_startNoise = 0.3f;
+	private float				_startNoise = 0.0f;
 	private bool				_aliveBorders = false;
 	private Texture2D			_map;
 

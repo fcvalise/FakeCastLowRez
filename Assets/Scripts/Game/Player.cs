@@ -29,8 +29,8 @@ public class Player : ACellObject
 	private Cell[,]				_cells;
 	private SpriteManager		_spriteManager;
 	private Vector2				_size;
-	private int					_lifeMax = 64;
-	private int					_life = 64;
+	private int					_lifeMax = 300;
+	private int					_life = 300;
 	private GUIStyle			_guiStyle = new GUIStyle();
 
 	private Vector2				_movement = Vector2.down;
@@ -228,7 +228,8 @@ public class Player : ACellObject
 	{
 		float timerMax = 0.5f;
 		float timer = timerMax;
-		while (timer > 0.0f) {
+		while (timer > 0.0f)
+		{
 			timer -= Time.deltaTime;
 			_colorFactor = Mathf.Clamp(timer / timerMax, 0.0f, 1.0f);
 			yield return new WaitForEndOfFrame();

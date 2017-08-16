@@ -6,8 +6,8 @@ public class Shield : ACellObject
 {
 	public CellSprite			_sprite;
 	public ColorHSV				_colorShield;
-	public int					_maxLife = 200;
 
+	private int					_maxLife = 200;
 	private int					_currentLife;
 	private Cell[,]				_cells;
 

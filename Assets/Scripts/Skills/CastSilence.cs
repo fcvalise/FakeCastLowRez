@@ -4,8 +4,11 @@ using UnityEngine;
 
 public class CastSilence : ASkill
 {
-	public float	_duration;
-	public ColorHSV	_silenceColor = new ColorHSV(Color.green);
+	public GameObject	_silence;
+	public float		_duration;
+	public ColorHSV		_silenceColor = new ColorHSV(Color.green);
+
+	private GameObject	_targetObject;
 
 	void Start ()
 	{
@@ -14,13 +17,27 @@ public class CastSilence : ASkill
 
 	public override void Cast(Player p_owner)
 	{
-		p_owner.GetTarget().GetComponent<Player>().IsSilence = true;
-		StartCoroutine(SilenceCo(p_owner));
+		_targetObject = p_owner.GetTarget();
+		Player target = _targetObject.GetComponent<Player>();
+
+		if (target.CanCastSkill())
+			_targetObject = p_owner.gameObject;
+
+		target = _targetObject.GetComponent<Player>();
+
+		target.IsSilence = true;
+		StartCoroutine(SilenceCo(target));
+
+		GameObject damageObject = Instantiate(_silence, target.transform.position, target.transform.rotation);
+		Silence silence = damageObject.GetComponent<Silence>();
+		silence.Setup();
+		silence.SetTarget(_targetObject);
+		silence._silenceColor = _silenceColor;
 	}
 
-	IEnumerator SilenceCo(Player p_owner)
+	IEnumerator SilenceCo(Player target)
 	{
 		yield return new WaitForSeconds(_duration);
-		p_owner.GetTarget().GetComponent<Player>().IsSilence = false;
+		target.GetComponent<Player>().IsSilence = false;
 	}
 }

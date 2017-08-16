@@ -47,11 +47,17 @@ public class Core : MonoBehaviour
 		_deltaSpeed += Time.deltaTime;
 		if (_deltaSpeed > 1f / _speed)
 		{
-			Damage[] damages = FindObjectsOfType(typeof(Damage)) as Damage[];
-			Shield[] shields = FindObjectsOfType(typeof(Shield)) as Shield[];
 			_deltaSpeed = 0f;
-			_player1.Simulate();
-			_player2.Simulate();
+
+			ACellObject[] cellObjects = FindObjectsOfType(typeof(ACellObject)) as ACellObject[];
+			foreach (ACellObject cellObject in cellObjects)
+			{
+				cellObject.Simulate();
+				cellObject.Add(_mainGrid._automaton._cells, _mainGrid._staticGrid);
+			}
+			_mainGrid.Simulate();
+
+			/*
 			// Manage collision between damages
 			for (int i = damages.Length - 1; i >= 0; i--) {
 				for (int j = damages.Length - 1; j >= 0; j--) {
@@ -63,24 +69,7 @@ public class Core : MonoBehaviour
 					}
 				}
 			}
-			foreach (Damage damage in damages)
-				damage.Simulate();
-			foreach (Shield shield in shields)
-				shield.Simulate();
-			foreach (ACellObject obj in _ui)
-				obj.Simulate();
-			
-			_mainGrid.Simulate();
-
-			foreach (Damage damage in damages)
-				damage.Add(_mainGrid._automaton._cells, _mainGrid._staticGrid);
-			foreach (ACellObject obj in _ui)
-				obj.Add(_mainGrid._automaton._cells, _mainGrid._staticGrid);
-			foreach (Shield shield in shields)
-				shield.Add(_mainGrid._automaton._cells, _mainGrid._staticGrid);
-
-			_player1.Add(_mainGrid._automaton._cells, _mainGrid._staticGrid);
-			_player2.Add(_mainGrid._automaton._cells, _mainGrid._staticGrid);
+			*/
 
 			Draw();
 		}
