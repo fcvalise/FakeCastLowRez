@@ -16,13 +16,25 @@ public class CellSprite : MonoBehaviour
 	private Vector2					_side = Vector2.down;
 	public int						_index = 0;
 
-	public void Create()
+	public void Create(CellSprite sprite)
 	{
+		_spriteSheet = sprite._spriteSheet;
+		_numberOfSprites = sprite._numberOfSprites;
+		_isLoop = sprite._isLoop;
+		_printOnAutomaton = sprite._printOnAutomaton;
+
 		_cells = new List<Cell[,]>();
 		_size = new Vector2Int(_spriteSheet.width / _numberOfSprites, _spriteSheet.height);
 		if (_size.x != _size.y)
 			Debug.LogError("ERROR : CellSprite \"" + _spriteSheet.name + "\" width different of height not supported yet");
 		FillCells();
+	}
+
+	public CellSprite AddSprite(GameObject gameObject)
+	{
+		CellSprite sprite = gameObject.AddComponent<CellSprite>();
+		sprite.Create(this);
+		return sprite;
 	}
 
 	private void FillCells()

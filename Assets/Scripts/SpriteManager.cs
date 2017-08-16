@@ -19,9 +19,7 @@ public class SpriteManager : MonoBehaviour
 		_sprites = new Dictionary<string, CellSprite>();
 		foreach (CellSprite sprite in _spritesData)
 		{
-			//TODO : Consider dynamic enum generation
-			_sprites.Add(sprite.name, sprite);
-			_sprites[sprite.name].Create();
+			_sprites.Add(sprite.name, sprite.AddSprite(gameObject));
 		}
 		PlayNext(_initial);
 		_side = Vector2.down;

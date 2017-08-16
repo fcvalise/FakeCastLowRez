@@ -11,7 +11,7 @@ public class Buff : ACellObject {
 
 	public override void Setup()
 	{
-		_sprite.Create();
+		_sprite = _sprite.AddSprite(gameObject);
 		_cells = new Cell[_sprite._size.x, _sprite._size.y];
 	}
 
